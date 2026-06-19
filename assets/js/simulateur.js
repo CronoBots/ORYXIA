@@ -78,7 +78,10 @@
     return w;
   }
 
-  /* ---------- carte de hauteur depuis l'image ---------- */
+  /* ---------- carte de hauteur depuis l'image ----------
+     Le motif est embossé sur un champ PLAT (baseline 0.5) :
+     le fond de l'image (mesuré sur ses bords) reste au niveau du champ,
+     seuls les détails s'élèvent (clair) ou se creusent (sombre). */
   function heightField(placeR, ox, oy) {
     const fd = Math.round(placeR * 2);
     const off = document.createElement("canvas"); off.width = off.height = fd;
@@ -87,19 +90,46 @@
     const dw = iw * sc, dh = ih * sc;
     o.drawImage(state.img, (fd - dw) / 2, (fd - dh) / 2, dw, dh);
     const data = o.getImageData(0, 0, fd, fd).data;
-    const contrast = (state.contrast / 100) * 2.0 + 0.6;
+    const lum = new Float32Array(fd * fd);
+    for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+      const a = data[i + 3] / 255;
+      lum[p] = ((0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255) * a;
+    }
+    // baseline = médiane approx du pourtour (fond de l'image)
+    const edge = [];
+    for (let x = 0; x < fd; x += 4) { edge.push(lum[x], lum[(fd - 1) * fd + x]); }
+    for (let y = 0; y < fd; y += 4) { edge.push(lum[y * fd], lum[y * fd + fd - 1]); }
+    edge.sort((a, b) => a - b); const base = edge[edge.length >> 1] || 0;
+    const gain = (state.contrast / 100) * 2.0 + 0.8;
     const bright = state.brightness / 100 * 0.4;
     const Hf = new Float32Array(S * S).fill(0.5);
     for (let y = 0; y < fd; y++) for (let x = 0; x < fd; x++) {
       const gx = x + ox, gy = y + oy; if (gx < 0 || gy < 0 || gx >= S || gy >= S) continue;
-      const s = (y * fd + x) * 4, a = data[s + 3] / 255;
-      let lum = (0.299 * data[s] + 0.587 * data[s + 1] + 0.114 * data[s + 2]) / 255;
-      lum = lum * a + 0.5 * (1 - a);
-      lum = (lum - 0.5) * contrast + 0.5 + bright;
-      Hf[gy * S + gx] = Math.max(0, Math.min(1, lum));
+      let h = 0.5 + (lum[y * fd + x] - base) * gain + bright;
+      Hf[gy * S + gx] = h < 0 ? 0 : h > 1 ? 1 : h;
     }
     if (state.invert) for (let i = 0; i < Hf.length; i++) Hf[i] = 1 - Hf[i];
     return Hf;
+  }
+
+  /* ---------- gravure d'un pixel (selon la matière) ---------- */
+  const _e = [0, 0, 0];
+  function engrave(R0, G0, B0, h, dlf, sp, m, kind, polish) {
+    const rf = Math.pow(Math.max(0, (0.5 - h) / 0.5), 1.3);   // creux sous le champ
+    const ph = Math.max(0, Math.min(1, (h - 0.5) / 0.5));     // reliefs au-dessus
+    if (kind === "anodized") {
+      R0 = lerp(R0, m.reveal[0], ph * 0.92); G0 = lerp(G0, m.reveal[1], ph * 0.92); B0 = lerp(B0, m.reveal[2], ph * 0.92);
+      R0 *= (1 + dlf * 0.3); G0 *= (1 + dlf * 0.3); B0 *= (1 + dlf * 0.3);
+    } else if (kind === "wood") {
+      R0 = lerp(R0, m.burn[0], ph * 0.8); G0 = lerp(G0, m.burn[1], ph * 0.8); B0 = lerp(B0, m.burn[2], ph * 0.8);
+      R0 *= (1 + dlf * 0.4); G0 *= (1 + dlf * 0.4); B0 *= (1 + dlf * 0.4);
+    } else {
+      R0 = lerp(R0, m.patina[0], rf * 0.55); G0 = lerp(G0, m.patina[1], rf * 0.55); B0 = lerp(B0, m.patina[2], rf * 0.55);
+      R0 *= (1 + dlf * 0.9); G0 *= (1 + dlf * 0.9); B0 *= (1 + dlf * 0.9);
+      R0 = lerp(R0, m.high[0], ph * 0.35); G0 = lerp(G0, m.high[1], ph * 0.35); B0 = lerp(B0, m.high[2], ph * 0.35);
+      const g = sp * polish * 0.85; R0 += m.spec[0] * g; G0 += m.spec[1] * g; B0 += m.spec[2] * g;
+    }
+    _e[0] = R0; _e[1] = G0; _e[2] = B0; return _e;
   }
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -116,8 +146,8 @@
   function renderRound(cyShift) {
     const m = MAT[state.material];
     const G = geometry();
-    const cx = S / 2, cy = S / 2 + (cyShift || 0), R = 300, rim = 30;
-    const beadR = (R - rim - 6) / R, fieldR = (R - rim - 18);
+    const cx = S / 2, cy = S / 2 + (cyShift || 0), R = 300;
+    const fieldR = Math.round(R * 0.78);
     const fieldRn = fieldR / R;
     const Hf = state.img ? heightField(fieldR, Math.round(cx - fieldR), Math.round(cy - fieldR)) : null;
 
@@ -156,54 +186,28 @@
         o[i * 4] = st; o[i * 4 + 1] = st; o[i * 4 + 2] = st * 1.08; o[i * 4 + 3] = 255; continue;
       }
 
-      // --- métal de base (réflexion d'environnement) ---
-      const a = ang[i], dome = 1 - 0.35 * r * r;
-      let env = 0.32 * dome + m.reflect * (angBand(a, -2.1, 0.5, 0.55) + angBand(a, 0.9, 0.7, 0.4) + angBand(a, 2.6, 0.4, 0.2));
-      env += 0.018 * Math.sin(r * R * 0.5) * m.reflect;          // marques de tour
-      env += (grain[i] - 0.5) * (isWood ? 0.10 : 0.05);
+      // --- champ métal lisse et poli ---
+      const a = ang[i], topg = -ny0[i] * 0.5 + 0.5, ao = 1 - 0.45 * r * r;
+      let env = 0.45 + 0.34 * topg * ao + 0.012 * Math.sin(a * 46) * r * m.reflect + (grain[i] - 0.5) * (isWood ? 0.10 : 0.05);
       let c = metalColor(env, m);
       R0 = c[0]; G0 = c[1]; B0 = c[2];
-
       if (isWood) { const v = wood[i]; R0 *= (0.8 + 0.35 * v); G0 *= (0.8 + 0.32 * v); B0 *= (0.78 + 0.3 * v); }
 
       if (r <= fieldRn) {
-        // --- zone gravée ---
-        if (Hf) {
-          const h = Hf[i], dlf = diff[i] || 0, sp = spec[i] || 0;
-          const rf = Math.pow(Math.max(0, (0.55 - h) / 0.55), 1.4);   // creux
-          const ph = Math.max(0, Math.min(1, (h - 0.62) / 0.38));     // sommets
-          if (isAno) {
-            // alu anodisé noir : la gravure révèle le métal clair
-            R0 = lerp(R0, m.reveal[0], rf * 0.9); G0 = lerp(G0, m.reveal[1], rf * 0.9); B0 = lerp(B0, m.reveal[2], rf * 0.9);
-            R0 *= (1 + dlf * 0.4); G0 *= (1 + dlf * 0.4); B0 *= (1 + dlf * 0.4);
-          } else if (isWood) {
-            // bois : la gravure brûle (plus foncé)
-            R0 = lerp(R0, m.burn[0], rf * 0.85); G0 = lerp(G0, m.burn[1], rf * 0.85); B0 = lerp(B0, m.burn[2], rf * 0.85);
-            R0 *= (1 + dlf * 0.5); G0 *= (1 + dlf * 0.5); B0 *= (1 + dlf * 0.5);
-          } else {
-            // métal : patine mate dans les creux, faces polies sur les sommets
-            R0 = lerp(R0, m.patina[0], rf * 0.8); G0 = lerp(G0, m.patina[1], rf * 0.8); B0 = lerp(B0, m.patina[2], rf * 0.8);
-            R0 *= (1 + dlf * 0.95); G0 *= (1 + dlf * 0.95); B0 *= (1 + dlf * 0.95);
-            R0 = lerp(R0, m.high[0], ph * 0.3); G0 = lerp(G0, m.high[1], ph * 0.3); B0 = lerp(B0, m.high[2], ph * 0.3);
-            const g = sp * polish * 1.1; R0 += m.spec[0] * g; G0 += m.spec[1] * g; B0 += m.spec[2] * g;
-          }
-        }
-      } else if (r > (beadR - 0.026) && r < (beadR + 0.026)) {
-        // anneau perlé
-        const pb = Math.max(0, Math.sin(a * 72) + 0.3);
-        R0 = lerp(m.mid[0], m.high[0], 0.2) * (0.6 + 0.5 * pb);
-        G0 = lerp(m.mid[1], m.high[1], 0.2) * (0.6 + 0.5 * pb);
-        B0 = lerp(m.mid[2], m.high[2], 0.2) * (0.6 + 0.5 * pb);
-        if (Math.abs(r - (beadR + 0.027)) < 0.004 || Math.abs(r - (beadR - 0.027)) < 0.004) { R0 = m.shadow[0]; G0 = m.shadow[1]; B0 = m.shadow[2]; }
-      } else if (r > (R - rim) / R) {
+        // --- zone gravée (motif embossé sur champ plat) ---
+        if (Hf) { const e = engrave(R0, G0, B0, Hf[i], diff[i] || 0, spec[i] || 0, m, m.kind, polish); R0 = e[0]; G0 = e[1]; B0 = e[2]; }
+      } else if (Math.abs(r - (fieldRn + 0.027)) < 0.006 || Math.abs(r - (fieldRn + 0.052)) < 0.004) {
+        // double filet gravé (bordure fine)
+        R0 = lerp(R0, m.shadow[0], 0.7); G0 = lerp(G0, m.shadow[1], 0.7); B0 = lerp(B0, m.shadow[2], 0.7);
+      } else if (r > 0.93) {
         // rim biseauté poli
-        const rimT = Math.max(0, Math.min(1, (r - (R - rim) / R) / (rim / R)));
+        const rimT = Math.max(0, Math.min(1, (r - 0.93) / 0.07));
         const bevel = Math.sin(rimT * Math.PI);
-        const topf = Math.max(0, Math.min(1, -ny0[i] * 0.8 + 0.5));
-        R0 = lerp(m.shadow[0], m.high[0], bevel) * (0.55 + 0.7 * topf);
-        G0 = lerp(m.shadow[1], m.high[1], bevel) * (0.55 + 0.7 * topf);
-        B0 = lerp(m.shadow[2], m.high[2], bevel) * (0.55 + 0.7 * topf);
-        if (r > 0.985) { R0 = m.shadow[0] * 0.6; G0 = m.shadow[1] * 0.6; B0 = m.shadow[2] * 0.6; }
+        const topf = Math.max(0, Math.min(1, -ny0[i] * 0.7 + 0.5));
+        R0 = lerp(m.shadow[0], m.high[0], bevel) * (0.5 + 0.7 * topf);
+        G0 = lerp(m.shadow[1], m.high[1], bevel) * (0.5 + 0.7 * topf);
+        B0 = lerp(m.shadow[2], m.high[2], bevel) * (0.5 + 0.7 * topf);
+        if (r > 0.99) { R0 = m.shadow[0] * 0.5; G0 = m.shadow[1] * 0.5; B0 = m.shadow[2] * 0.5; }
       }
 
       // léger softbox sur tout le disque
@@ -280,18 +284,7 @@
         const bt = edgeDist / border, bevel = Math.sin(bt * Math.PI);
         R0 = lerp(R0 * 0.7, m.high[0], bevel * 0.5); G0 = lerp(G0 * 0.7, m.high[1], bevel * 0.5); B0 = lerp(B0 * 0.7, m.high[2], bevel * 0.5);
       }
-      if (inField && Hf) {
-        const h2 = Hf[i], dlf = diff[i] || 0, sp = spec[i] || 0;
-        const rf = Math.pow(Math.max(0, (0.55 - h2) / 0.55), 1.4), ph = Math.max(0, Math.min(1, (h2 - 0.62) / 0.38));
-        if (isAno) { R0 = lerp(R0, m.reveal[0], rf * 0.9); G0 = lerp(G0, m.reveal[1], rf * 0.9); B0 = lerp(B0, m.reveal[2], rf * 0.9); R0 *= (1 + dlf * 0.4); G0 *= (1 + dlf * 0.4); B0 *= (1 + dlf * 0.4); }
-        else if (isWood) { R0 = lerp(R0, m.burn[0], rf * 0.85); G0 = lerp(G0, m.burn[1], rf * 0.85); B0 = lerp(B0, m.burn[2], rf * 0.85); R0 *= (1 + dlf * 0.5); G0 *= (1 + dlf * 0.5); B0 *= (1 + dlf * 0.5); }
-        else {
-          R0 = lerp(R0, m.patina[0], rf * 0.8); G0 = lerp(G0, m.patina[1], rf * 0.8); B0 = lerp(B0, m.patina[2], rf * 0.8);
-          R0 *= (1 + dlf * 0.95); G0 *= (1 + dlf * 0.95); B0 *= (1 + dlf * 0.95);
-          R0 = lerp(R0, m.high[0], ph * 0.3); G0 = lerp(G0, m.high[1], ph * 0.3); B0 = lerp(B0, m.high[2], ph * 0.3);
-          const g = sp * polish * 1.1; R0 += m.spec[0] * g; G0 += m.spec[1] * g; B0 += m.spec[2] * g;
-        }
-      }
+      if (inField && Hf) { const e = engrave(R0, G0, B0, Hf[i], diff[i] || 0, spec[i] || 0, m, m.kind, polish); R0 = e[0]; G0 = e[1]; B0 = e[2]; }
       const hx = (x - cx + 80) / (w * 0.7), hy = (y - cy + 90) / (h * 0.7); const hl = Math.exp(-(hx * hx + hy * hy)) * 34;
       o[i * 4] = Math.min(255, R0 + hl); o[i * 4 + 1] = Math.min(255, G0 + hl); o[i * 4 + 2] = Math.min(255, B0 + hl); o[i * 4 + 3] = 255;
     }
