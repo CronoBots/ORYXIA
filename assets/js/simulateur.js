@@ -14,10 +14,15 @@
   const S = 760;
   canvas.width = S; canvas.height = S;
 
+  // calque hors-écran : on dessine la face de la pièce dessus,
+  // puis on l'incline en perspective (vue 3D) sur le canvas visible.
+  const med = document.createElement("canvas"); med.width = med.height = S;
+  const mctx = med.getContext("2d");
+
   const state = {
     img: null, shape: "medal", material: "laiton",
     contrast: 50, brightness: 0, depth: 70, detail: 55, invert: false, polish: 60,
-    text: "ORYXIA", subtext: "Édition limitée", showText: true,
+    tilt: true, text: "ORYXIA", subtext: "Édition limitée", showText: true,
   };
 
   // kind: metal | anodized | wood
@@ -142,8 +147,8 @@
   }
   function angBand(ang, c, w, a) { let d = ang - c; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a * Math.exp(-(d * d) / w); }
 
-  /* ---------- rendu rond (médaille / disque) ---------- */
-  function renderRound(cyShift) {
+  /* ---------- rendu rond (médaille / disque) sur le calque ---------- */
+  function renderRound(cyShift, octx) {
     const m = MAT[state.material];
     const G = geometry();
     const cx = S / 2, cy = S / 2 + (cyShift || 0), R = 300;
@@ -175,16 +180,7 @@
 
     for (let i = 0; i < S * S; i++) {
       const r = rad[i]; let R0, G0, B0;
-      if (r > 1.0) { // fond pierre + ombre de contact
-        const x = i % S, y = (i / S) | 0;
-        const vx = (x - cx) / (S * 0.72), vy = (y - cy) / (S * 0.72);
-        const vig = Math.max(0, 1 - (vx * vx + vy * vy));
-        let st = (16 + grain[i] * 26) * vig;
-        const sx = (x - cx) / (R * 1.18), sy = (y - (cy + 26)) / (R * 1.05);
-        const sh = Math.pow(Math.max(0, 1 - (sx * sx + sy * sy)), 1.6);
-        st *= (1 - 0.82 * sh);
-        o[i * 4] = st; o[i * 4 + 1] = st; o[i * 4 + 2] = st * 1.08; o[i * 4 + 3] = 255; continue;
-      }
+      if (r > 1.0) continue; // hors du disque -> transparent
 
       // --- champ métal lisse et poli ---
       const a = ang[i], topg = -ny0[i] * 0.5 + 0.5, ao = 1 - 0.45 * r * r;
@@ -216,13 +212,13 @@
       const hl = Math.exp(-(hx * hx + hy * hy)) * 42;
       o[i * 4] = Math.min(255, R0 + hl); o[i * 4 + 1] = Math.min(255, G0 + hl); o[i * 4 + 2] = Math.min(255, B0 + hl); o[i * 4 + 3] = 255;
     }
-    ctx.putImageData(out, 0, 0);
+    octx.putImageData(out, 0, 0);
     // textes gravés
-    if (state.showText) { drawCurvedText(cx, cy, R - 14, state.text.toUpperCase(), m, false); if (state.subtext) drawCurvedText(cx, cy, R - 14, state.subtext.toUpperCase(), m, true); }
+    if (state.showText) { drawCurvedText(octx, cx, cy, R - 14, state.text.toUpperCase(), m, false); if (state.subtext) drawCurvedText(octx, cx, cy, R - 14, state.subtext.toUpperCase(), m, true); }
   }
 
   /* ---------- rendu rectangulaire (plaque / carré / médaillon) ---------- */
-  function renderRect(type) {
+  function renderRect(type, octx) {
     const m = MAT[state.material];
     const G = geometry();
     const cx = S / 2, cy = S / 2;
@@ -263,13 +259,7 @@
         const dxl = Math.min(x - x0, x0 + w - x), dyl = Math.min(y - y0, y0 + h - y);
         if (dxl < radc && dyl < radc) { const ddx = radc - dxl, ddy = radc - dyl; if (ddx * ddx + ddy * ddy > radc * radc) inside = false; }
       }
-      if (!inside) {
-        const vx = (x - cx) / (S * 0.72), vy = (y - cy) / (S * 0.72); const vig = Math.max(0, 1 - (vx * vx + vy * vy));
-        let st = (16 + grain[i] * 26) * vig;
-        const sx = (x - cx) / (w * 0.62), sy = (y - (cy + 24)) / (h * 0.62);
-        const sh = Math.pow(Math.max(0, 1 - (sx * sx + sy * sy)), 1.6); st *= (1 - 0.8 * sh);
-        o[i * 4] = st; o[i * 4 + 1] = st; o[i * 4 + 2] = st * 1.08; o[i * 4 + 3] = 255; continue;
-      }
+      if (!inside) continue; // hors de la plaque -> transparent
       // métal de base : dégradé diagonal + grain
       const gv = ((x - x0) / w + (y - y0) / h) / 2;
       let env = 0.30 + m.reflect * (0.6 * Math.exp(-Math.pow((gv - 0.32) / 0.18, 2)) + 0.25 * Math.exp(-Math.pow((gv - 0.78) / 0.22, 2)));
@@ -288,9 +278,9 @@
       const hx = (x - cx + 80) / (w * 0.7), hy = (y - cy + 90) / (h * 0.7); const hl = Math.exp(-(hx * hx + hy * hy)) * 34;
       o[i * 4] = Math.min(255, R0 + hl); o[i * 4 + 1] = Math.min(255, G0 + hl); o[i * 4 + 2] = Math.min(255, B0 + hl); o[i * 4 + 3] = 255;
     }
-    ctx.putImageData(out, 0, 0);
-    if (type === "tag") { ctx.beginPath(); ctx.arc(cx, y0 + 40, 20, 0, Math.PI * 2); ctx.lineWidth = 12; ctx.strokeStyle = `rgb(${m.shadow})`; ctx.stroke(); ctx.fillStyle = "#0a0a0c"; ctx.fill(); }
-    if (state.showText) drawFlatText(cx, y0 + h - 44, m);
+    octx.putImageData(out, 0, 0);
+    if (type === "tag") { octx.beginPath(); octx.arc(cx, y0 + 40, 20, 0, Math.PI * 2); octx.lineWidth = 12; octx.strokeStyle = `rgb(${m.shadow})`; octx.stroke(); octx.fillStyle = "#0a0a0c"; octx.fill(); }
+    if (state.showText) drawFlatText(octx, cx, y0 + h - 44, m);
   }
 
   /* ---------- ruban (médaille) ---------- */
@@ -305,33 +295,64 @@
 
   /* ---------- textes ---------- */
   function rgb(c, a) { return `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a == null ? 1 : a})`; }
-  function drawFlatText(cx, y, m) {
-    ctx.save(); ctx.textAlign = "center"; ctx.font = "700 38px Cinzel, serif";
-    ctx.fillStyle = rgb(m.shadow, .95); ctx.fillText(state.text.toUpperCase(), cx, y + 1.5);
-    ctx.fillStyle = rgb(m.high, .85); ctx.fillText(state.text.toUpperCase(), cx, y - 1);
-    if (state.subtext) { ctx.font = "400 17px Jost, sans-serif"; ctx.fillStyle = rgb(m.shadow, .9); ctx.fillText(state.subtext, cx, y + 26); }
-    ctx.restore();
+  function drawFlatText(tctx, cx, y, m) {
+    tctx.save(); tctx.textAlign = "center"; tctx.font = "700 38px Cinzel, serif";
+    tctx.fillStyle = rgb(m.shadow, .95); tctx.fillText(state.text.toUpperCase(), cx, y + 1.5);
+    tctx.fillStyle = rgb(m.high, .85); tctx.fillText(state.text.toUpperCase(), cx, y - 1);
+    if (state.subtext) { tctx.font = "400 17px Jost, sans-serif"; tctx.fillStyle = rgb(m.shadow, .9); tctx.fillText(state.subtext, cx, y + 26); }
+    tctx.restore();
   }
-  function drawCurvedText(cx, cy, radius, text, m, bottom) {
-    ctx.save(); ctx.translate(cx, cy); ctx.font = "700 25px Cinzel, serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  function drawCurvedText(tctx, cx, cy, radius, text, m, bottom) {
+    tctx.save(); tctx.translate(cx, cy); tctx.font = "700 25px Cinzel, serif"; tctx.textAlign = "center"; tctx.textBaseline = "middle";
     const chars = text.split(""); const arc = Math.min(Math.PI * 0.92, chars.length * 0.13); const step = arc / Math.max(chars.length, 1);
     const start = bottom ? Math.PI / 2 + arc / 2 : -Math.PI / 2 - arc / 2;
     chars.forEach((ch, i) => {
       const an = bottom ? start - step * i : start + step * i;
-      ctx.save(); ctx.rotate(an); ctx.translate(0, bottom ? radius : -radius); if (bottom) ctx.rotate(Math.PI);
-      ctx.fillStyle = rgb(m.shadow, .95); ctx.fillText(ch, 0, 1.4);
-      ctx.fillStyle = rgb(m.high, .8); ctx.fillText(ch, 0, -0.4); ctx.restore();
+      tctx.save(); tctx.rotate(an); tctx.translate(0, bottom ? radius : -radius); if (bottom) tctx.rotate(Math.PI);
+      tctx.fillStyle = rgb(m.shadow, .95); tctx.fillText(ch, 0, 1.4);
+      tctx.fillStyle = rgb(m.high, .8); tctx.fillText(ch, 0, -0.4); tctx.restore();
     });
-    ctx.restore();
+    tctx.restore();
   }
 
-  function placeholder() {
-    ctx.fillStyle = "#0d0d10"; ctx.fillRect(0, 0, S, S);
-    renderRound(40);
-    ctx.save(); ctx.textAlign = "center"; ctx.fillStyle = "rgba(255,255,255,.85)";
-    ctx.font = "600 22px Cinzel, serif"; ctx.fillText("Importez une image", S / 2, S / 2 + 30);
-    ctx.font = "300 15px Jost, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.fillText("pour visualiser la gravure", S / 2, S / 2 + 58);
-    ctx.restore();
+  /* ---------- scène (fond pierre + ombre portée) ---------- */
+  function drawScene(shadowCx, shadowCy, shadowR) {
+    const g = geometry().grain;
+    const out = ctx.createImageData(S, S), o = out.data;
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const i = y * S + x;
+      const vx = (x - S / 2) / (S * 0.72), vy = (y - S / 2) / (S * 0.72);
+      const vig = Math.max(0, 1 - (vx * vx + vy * vy));
+      let st = (13 + g[i] * 20) * vig;
+      const sx = (x - shadowCx) / (shadowR * 1.2), sy = (y - shadowCy) / (shadowR * 0.86);
+      const sh = Math.pow(Math.max(0, 1 - (sx * sx + sy * sy)), 1.7);
+      st *= (1 - 0.85 * sh);
+      o[i * 4] = st; o[i * 4 + 1] = st; o[i * 4 + 2] = st * 1.08; o[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  /* ---------- inclinaison 3D (perspective par tranches) ---------- */
+  function drawTilted(src, dst, topInset, botInset, topY, botY, offY) {
+    const step = 2;
+    for (let y = 0; y < S; y += step) {
+      const tY = y / (S - 1);
+      const w = lerp(S - 2 * topInset, S - 2 * botInset, tY);
+      const dx = (S - w) / 2;
+      const dy = lerp(topY, botY, tY) + offY;
+      const dh = (botY - topY) / S * step + 1.2;
+      dst.drawImage(src, 0, y, S, step, dx, dy, w, dh);
+    }
+  }
+  // version sombre de la face -> sert de tranche (épaisseur)
+  function buildEdge() {
+    const e = document.createElement("canvas"); e.width = e.height = S;
+    const ec = e.getContext("2d");
+    ec.drawImage(med, 0, 0);
+    ec.globalCompositeOperation = "source-atop";
+    ec.fillStyle = "rgba(18,11,4,0.62)"; ec.fillRect(0, 0, S, S);
+    ec.globalCompositeOperation = "source-over";
+    return e;
   }
 
   /* ---------- rendu principal (throttle rAF) ---------- */
@@ -340,14 +361,38 @@
     if (pending) return; pending = true;
     requestAnimationFrame(() => {
       pending = false;
-      ctx.clearRect(0, 0, S, S);
-      if (state.shape === "medal") { ctx.fillStyle = "#0a0a0c"; ctx.fillRect(0, 0, S, S); drawRibbon(S / 2, S / 2 + 40 - 222); renderRound(40); }
-      else if (state.shape === "round") renderRound(0);
-      else renderRect(state.shape);
-      // filigrane
+      const tilt = state.tilt;
+
+      // 1) dessine la face de la pièce sur le calque (transparent autour)
+      mctx.clearRect(0, 0, S, S);
+      if (state.shape === "medal" || state.shape === "round") renderRound(0, mctx);
+      else renderRect(state.shape, mctx);
+
+      // 2) scène (fond + ombre portée, position selon la vue)
+      drawScene(S / 2, tilt ? S / 2 + 70 : S / 2 + 30, 300);
+
+      // 3) ruban (médaille) derrière la pièce
+      if (state.shape === "medal") drawRibbon(S / 2, tilt ? 150 : S / 2 - 222);
+
+      // 4) compose la pièce (inclinée en 3D ou à plat)
+      if (tilt) {
+        const params = [92, 24, 70, S - 90]; // topInset, botInset, topY, botY
+        const edge = buildEdge();
+        drawTilted(edge, ctx, params[0], params[1], params[2], params[3], 22); // tranche
+        drawTilted(med, ctx, params[0], params[1], params[2], params[3], 0);   // face
+      } else {
+        ctx.drawImage(med, 0, 0);
+      }
+
+      // 5) filigrane + invite
       ctx.save(); ctx.font = "600 13px Jost, sans-serif"; ctx.fillStyle = "rgba(230,180,34,.5)"; ctx.textAlign = "right";
       ctx.fillText("Simulation ORYXIA Design", S - 18, S - 16); ctx.restore();
-      if (!state.img) { ctx.save(); ctx.textAlign = "center"; ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.font = "600 22px Cinzel, serif"; ctx.fillText("Importez une image", S / 2, S / 2 + (state.shape === 'medal' ? 40 : 0)); ctx.font = "300 14px Jost, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.fillText("pour visualiser la gravure", S / 2, S / 2 + (state.shape === 'medal' ? 66 : 26)); ctx.restore(); }
+      if (!state.img) {
+        ctx.save(); ctx.textAlign = "center";
+        ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.font = "600 22px Cinzel, serif"; ctx.fillText("Importez une image", S / 2, S / 2 + 8);
+        ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.font = "300 14px Jost, sans-serif"; ctx.fillText("pour visualiser la gravure", S / 2, S / 2 + 34);
+        ctx.restore();
+      }
     });
   }
 
@@ -374,6 +419,7 @@
     const sl = (id, key, suf = "") => { const el = document.getElementById(id); if (!el) return; const v = document.getElementById(id + "-val"); el.value = state[key]; if (v) v.textContent = el.value + suf; el.addEventListener("input", () => { state[key] = +el.value; if (v) v.textContent = el.value + suf; render(); }); };
     sl("ctl-depth", "depth", "%"); sl("ctl-detail", "detail", "%"); sl("ctl-polish", "polish", "%"); sl("ctl-contrast", "contrast", "%"); sl("ctl-bright", "brightness");
     document.getElementById("ctl-invert")?.addEventListener("change", e => { state.invert = e.target.checked; render(); });
+    document.getElementById("ctl-tilt")?.addEventListener("change", e => { state.tilt = e.target.checked; render(); });
     document.getElementById("ctl-showtext")?.addEventListener("change", e => { state.showText = e.target.checked; render(); });
     document.getElementById("ctl-text")?.addEventListener("input", e => { state.text = e.target.value; render(); });
     document.getElementById("ctl-subtext")?.addEventListener("input", e => { state.subtext = e.target.value; render(); });
