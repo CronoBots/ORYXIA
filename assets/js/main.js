@@ -92,10 +92,10 @@
               <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design">
               <p>Atelier de gravure laser de précision. Nous transformons vos idées en pièces uniques, sur tous supports, avec une finition d'exception.</p>
               <div class="socials">
-                <a href="#" aria-label="Instagram">◐</a>
-                <a href="#" aria-label="Facebook">f</a>
-                <a href="#" aria-label="Pinterest">P</a>
-                <a href="#" aria-label="TikTok">♪</a>
+                <a href="#" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+                <a href="#" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-7h2.3l.4-2.8h-2.7V9.4c0-.8.2-1.3 1.4-1.3h1.4V5.6c-.7-.1-1.5-.1-2.3-.1-2.3 0-3.8 1.4-3.8 4v2.2H7.9V14h2.4v7h3.2z"/></svg></a>
+                <a href="#" aria-label="Pinterest" title="Pinterest"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.6 2 4 5.6 4 8.8c0 1.9.7 3.6 2.3 4.3.3.1.5 0 .5-.3l.2-.8c.1-.3 0-.4-.1-.6-.4-.5-.7-1.1-.7-2 0-2.5 1.9-4.8 5-4.8 2.7 0 4.2 1.7 4.2 3.9 0 2.9-1.3 5.3-3.1 5.3-1 0-1.8-.8-1.5-1.9.3-1.3.9-2.6.9-3.5 0-.8-.4-1.5-1.3-1.5-1.1 0-1.9 1.1-1.9 2.6 0 1 .3 1.6.3 1.6s-1.2 5-1.4 5.9c-.3 1.4-.1 3.2 0 3.4 0 .1.2.1.3 0 .1-.1 1.6-2 2.1-3.8l.8-3c.4.8 1.5 1.4 2.7 1.4 3.5 0 5.9-3.2 5.9-7.5C20 5.1 17 2 12 2z"/></svg></a>
+                <a href="#" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.6 3c.3 2 1.5 3.4 3.4 3.6v2.5c-1.1 0-2.3-.4-3.4-1v5.5c0 3.3-2.4 5.4-5.3 5.4-2.9 0-5.1-2.3-5.1-5.1 0-3 2.4-5.2 5.4-4.9v2.6c-.3-.1-.7-.2-1-.2-1.3 0-2.3 1.1-2.3 2.5 0 1.4 1 2.5 2.4 2.5 1.5 0 2.6-1.1 2.6-2.9V3h2.9z"/></svg></a>
               </div>
             </div>
             <div>
@@ -219,7 +219,9 @@
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
       bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
-      top.classList.toggle("show", window.scrollY > 500);
+      // masque le bouton près du pied de page pour éviter le chevauchement
+      const nearBottom = window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 170;
+      top.classList.toggle("show", window.scrollY > 500 && !nearBottom);
     };
     window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
   }
