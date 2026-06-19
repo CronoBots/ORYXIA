@@ -559,7 +559,19 @@
     document.getElementById("ctl-showtext")?.addEventListener("change", e => { state.showText = e.target.checked; render(); });
     document.getElementById("ctl-text")?.addEventListener("input", e => { state.text = e.target.value; render(); });
     document.getElementById("ctl-subtext")?.addEventListener("input", e => { state.subtext = e.target.value; render(); });
-    document.getElementById("sim-download")?.addEventListener("click", () => { const a = document.createElement("a"); a.download = "oryxia-simulation-gravure.png"; a.href = canvas.toDataURL("image/png"); a.click(); });
+    document.getElementById("sim-download")?.addEventListener("click", () => {
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], "oryxia-gravure.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: "Ma gravure ORYXIA", text: "Simulation ORYXIA Design" }); return; }
+          catch (e) { if (e && e.name === "AbortError") return; }
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a"); a.download = "oryxia-gravure.png"; a.href = url; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }, "image/png");
+    });
     document.getElementById("sim-reset")?.addEventListener("click", () => { loadDefault(); });
   }
 

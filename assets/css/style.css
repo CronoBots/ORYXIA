@@ -676,3 +676,18 @@ body.menu-open #scroll-progress { opacity: 0; }
   background: rgba(255,255,255,.08); border: 1px solid var(--gris); color: var(--blanc); font-size: 1.1rem; cursor: pointer; transition: var(--transition);
 }
 #lightbox .lb-close:hover { background: var(--or); color: #1a1206; border-color: var(--or); transform: rotate(90deg); }
+
+/* =========================================================
+   BOUTONS UNIFORMISÉS
+   ========================================================= */
+.btn { justify-content: center; text-align: center; min-height: 52px; line-height: 1.1; white-space: nowrap; }
+.btn-sm { min-height: 42px; }
+.hero-actions, .sim-actions { gap: 14px; }
+.hero-actions .btn, .sim-actions .btn { flex: 0 1 auto; }
+
+/* Sur mobile : boutons d'action pleine largeur et alignés */
+@media (max-width: 560px) {
+  .hero-actions, .sim-actions, .cta-band .hero-actions { flex-direction: column; align-items: stretch; width: 100%; }
+  .hero-actions .btn, .sim-actions .btn, .cta-band .hero-actions .btn { width: 100%; }
+  .btn { white-space: normal; }
+}
