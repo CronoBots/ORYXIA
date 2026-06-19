@@ -19,8 +19,8 @@
     <div class="container">
       <p class="breadcrumb"><a href="index.html">Accueil</a> / Simulateur</p>
       <span class="eyebrow" style="justify-content:center">Outil exclusif</span>
-      <h1 class="h-xl">Simulateur de <span class="metal-or">gravure</span></h1>
-      <p class="lead">Importez une photo, un logo ou un dessin et découvrez en temps réel le rendu de votre gravure sur une médaille ou une plaque. Ajustez, personnalisez, téléchargez.</p>
+      <h1 class="h-xl">Simulateur de <span class="metal-or">gravure en relief</span></h1>
+      <p class="lead">Importez une photo, un logo ou un dessin : notre moteur transforme votre image en <strong>gravure métallique en relief</strong>, avec profondeur, ombres et reflets — comme une vraie médaille en laiton. Ajustez, personnalisez, téléchargez.</p>
     </div>
   </section>
 
@@ -57,7 +57,8 @@
           <div class="sim-group">
             <label>3 · Matière</label>
             <div class="chips">
-              <button class="chip active" data-mat="or">Or</button>
+              <button class="chip active" data-mat="laiton">Laiton</button>
+              <button class="chip" data-mat="or">Or</button>
               <button class="chip" data-mat="argent">Argent</button>
               <button class="chip" data-mat="bronze">Bronze</button>
               <button class="chip" data-mat="noir">Noir mat</button>
@@ -66,12 +67,14 @@
           </div>
 
           <div class="sim-group">
-            <label>4 · Réglages de gravure</label>
-            <div class="slider-row"><label>Profondeur</label><input type="range" id="ctl-depth" min="20" max="100" value="85"><span class="val" id="ctl-depth-val">85%</span></div>
-            <div class="slider-row"><label>Contraste</label><input type="range" id="ctl-contrast" min="0" max="100" value="35"><span class="val" id="ctl-contrast-val">35%</span></div>
+            <label>4 · Relief & gravure</label>
+            <div class="slider-row"><label>Profondeur</label><input type="range" id="ctl-depth" min="10" max="100" value="70"><span class="val" id="ctl-depth-val">70%</span></div>
+            <div class="slider-row"><label>Finesse</label><input type="range" id="ctl-detail" min="10" max="100" value="55"><span class="val" id="ctl-detail-val">55%</span></div>
+            <div class="slider-row"><label>Reflets</label><input type="range" id="ctl-polish" min="0" max="100" value="55"><span class="val" id="ctl-polish-val">55%</span></div>
+            <div class="slider-row"><label>Contraste</label><input type="range" id="ctl-contrast" min="0" max="100" value="45"><span class="val" id="ctl-contrast-val">45%</span></div>
             <div class="slider-row"><label>Luminosité</label><input type="range" id="ctl-bright" min="-80" max="80" value="0"><span class="val" id="ctl-bright-val">0</span></div>
             <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-top:8px;cursor:pointer">
-              <input type="checkbox" id="ctl-invert" style="accent-color:var(--or)"> Inverser (gravure claire sur fond foncé)
+              <input type="checkbox" id="ctl-invert" style="accent-color:var(--or)"> Inverser le relief (creux ↔ saillie)
             </label>
           </div>
 
@@ -95,7 +98,7 @@
               <a href="contact.html" class="btn btn-ghost">Commander ce modèle</a>
             </div>
           </div>
-          <p class="form-note center mt-40">💡 Astuce : un logo ou une image avec de bons contrastes (noir & blanc) donne le plus beau rendu gravé. Cette simulation est indicative ; le rendu final dépend du matériau réel.</p>
+          <p class="form-note center mt-40">💡 Astuce : pour un beau relief, montez la <strong>Profondeur</strong> et la <strong>Finesse</strong>, puis ajustez le <strong>Contraste</strong>. Une image bien contrastée (sujet clair sur fond sombre, ou inversement avec « Inverser ») donne le rendu le plus profond, comme sur du laiton. Simulation indicative ; le rendu final dépend du matériau réel.</p>
         </div>
 
       </div>
@@ -110,9 +113,9 @@
         <h2 class="h-lg">Conseils <span class="metal-or">images</span></h2>
       </div>
       <div class="grid grid-3">
-        <div class="card reveal"><div class="ico">🌓</div><h3>Misez sur le contraste</h3><p>Les images nettes et contrastées (logos, silhouettes, photos N&B) se gravent le mieux.</p></div>
-        <div class="card reveal d1"><div class="ico">🔍</div><h3>Haute résolution</h3><p>Privilégiez une image de bonne définition pour conserver les détails fins à la gravure.</p></div>
-        <div class="card reveal d2"><div class="ico">✍️</div><h3>Simplifiez</h3><p>Un visuel épuré rend souvent mieux qu'une image surchargée de petits détails.</p></div>
+        <div class="card reveal"><div class="ico">🗿</div><h3>Jouez le relief</h3><p>Le moteur lit votre image comme une carte de hauteur : les zones claires ressortent, les sombres se creusent. « Inverser » échange les deux.</p></div>
+        <div class="card reveal d1"><div class="ico">🌓</div><h3>Misez sur le contraste</h3><p>Logos, silhouettes, blasons et photos N&B donnent les reliefs les plus nets et profonds.</p></div>
+        <div class="card reveal d2"><div class="ico">🔍</div><h3>Haute résolution</h3><p>Une image bien définie conserve les détails fins (textures, ciselures) une fois gravée.</p></div>
       </div>
       <div class="center mt-40 reveal"><a href="contact.html" class="btn btn-or btn-lg">Valider mon projet avec un expert</a></div>
     </div>
