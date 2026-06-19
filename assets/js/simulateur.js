@@ -175,9 +175,10 @@
     }
 
     const out = ctx.createImageData(S, S); const o = out.data;
-    const { rad, ang, ny0, grain, wood } = G;
+    const { rad, ang, nx0, ny0, grain, wood } = G;
     const isWood = m.kind === "wood", isAno = m.kind === "anodized";
     const polish = state.polish / 100;
+    const rimIn = 0.80, rimOut = 0.965;
 
     for (let i = 0; i < S * S; i++) {
       const r = rad[i]; let R0, G0, B0;
@@ -193,18 +194,31 @@
       if (r <= fieldRn) {
         // --- zone gravée (motif embossé sur champ plat) ---
         if (Hf) { const e = engrave(R0, G0, B0, Hf[i], diff[i] || 0, spec[i] || 0, m, m.kind, polish); R0 = e[0]; G0 = e[1]; B0 = e[2]; }
-      } else if (Math.abs(r - (fieldRn + 0.027)) < 0.006 || Math.abs(r - (fieldRn + 0.052)) < 0.004) {
-        // double filet gravé (bordure fine)
-        R0 = lerp(R0, m.shadow[0], 0.7); G0 = lerp(G0, m.shadow[1], 0.7); B0 = lerp(B0, m.shadow[2], 0.7);
-      } else if (r > 0.93) {
-        // rim biseauté poli
-        const rimT = Math.max(0, Math.min(1, (r - 0.93) / 0.07));
-        const bevel = Math.sin(rimT * Math.PI);
-        const topf = Math.max(0, Math.min(1, -ny0[i] * 0.7 + 0.5));
-        R0 = lerp(m.shadow[0], m.high[0], bevel) * (0.5 + 0.7 * topf);
-        G0 = lerp(m.shadow[1], m.high[1], bevel) * (0.5 + 0.7 * topf);
-        B0 = lerp(m.shadow[2], m.high[2], bevel) * (0.5 + 0.7 * topf);
-        if (r > 0.99) { R0 = m.shadow[0] * 0.5; G0 = m.shadow[1] * 0.5; B0 = m.shadow[2] * 0.5; }
+      } else {
+        // --- bordure : gorge + rim bombé poli + tranche ---
+        const facing = (-nx0[i] * 0.5 - ny0[i] * 0.72) / (r || 1e-3); // +1 = vers la lumière
+        if (r < rimIn) {
+          // gorge incuse (sépare champ et bordure)
+          const gk = Math.max(0, Math.min(1, (r - fieldRn) / (rimIn - fieldRn)));
+          const groove = Math.sin(gk * Math.PI) * 0.75;
+          R0 *= (1 - groove); G0 *= (1 - groove); B0 *= (1 - groove);
+        } else if (r <= rimOut) {
+          // rim bombé poli (reflet directionnel)
+          const u = (r - rimIn) / (rimOut - rimIn);
+          const bulge = Math.sin(u * Math.PI);
+          let lit = 0.42 + bulge * (0.42 + 0.55 * facing) + (grain[i] - 0.5) * 0.02;
+          const c2 = metalColor(0.2 + lit * 1.05, m);
+          const eIn = Math.max(0, (0.06 - u) / 0.06), eOut = Math.max(0, (u - 0.94) / 0.06);
+          const k = (1 - eIn * 0.5) * (1 - eOut * 0.55);
+          R0 = c2[0] * k; G0 = c2[1] * k; B0 = c2[2] * k;
+        } else {
+          // tranche externe sombre + léger reflet de chant
+          const e = (r - rimOut) / (1 - rimOut);
+          const catch_ = Math.max(0, facing) * Math.max(0, 1 - Math.abs(e - 0.25) / 0.25);
+          R0 = m.shadow[0] * (0.35 + 0.25 * e) + m.high[0] * catch_ * 0.55;
+          G0 = m.shadow[1] * (0.35 + 0.25 * e) + m.high[1] * catch_ * 0.55;
+          B0 = m.shadow[2] * (0.35 + 0.25 * e) + m.high[2] * catch_ * 0.55;
+        }
       }
 
       // léger softbox sur tout le disque
