@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarifs & devis — ORYXIA Design</title>
+  <meta name="description" content="Tarifs indicatifs de gravure laser ORYXIA Design et estimateur de prix en ligne. Devis gratuit et personnalisé.">
+  <link rel="icon" href="assets/img/logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Tarifs</p>
+      <span class="eyebrow" style="justify-content:center">Transparence</span>
+      <h1 class="h-xl">Tarifs & <span class="metal-or">devis</span></h1>
+      <p class="lead">Des formules claires pour tous les budgets. Chaque projet étant unique, le devis final est toujours personnalisé et gratuit.</p>
+    </div>
+  </section>
+
+  <!-- FORMULES -->
+  <section class="section">
+    <div class="container">
+      <div class="price-grid">
+        <div class="price reveal">
+          <span class="tag">Essentiel</span>
+          <div class="amount">dès 15€</div>
+          <p class="desc">Petits objets et gravures simples à l'unité.</p>
+          <ul>
+            <li>1 objet personnalisé</li>
+            <li>Texte ou logo simple</li>
+            <li>Maquette numérique incluse</li>
+            <li>Un matériau au choix</li>
+            <li>Délai standard (5-7 j)</li>
+          </ul>
+          <a href="contact.html" class="btn btn-ghost">Demander un devis</a>
+        </div>
+        <div class="price featured reveal d1">
+          <span class="badge-pop">Le plus demandé</span>
+          <span class="tag">Personnalisé</span>
+          <div class="amount">dès 39€</div>
+          <p class="desc">Pour les cadeaux et pièces sur mesure soignées.</p>
+          <ul>
+            <li>Création graphique sur mesure</li>
+            <li>Photo, logo & texte combinés</li>
+            <li>2 retouches de maquette</li>
+            <li>Tous matériaux disponibles</li>
+            <li>Emballage cadeau offert</li>
+            <li>Délai express possible (48h)</li>
+          </ul>
+          <a href="contact.html" class="btn btn-or">Demander un devis</a>
+        </div>
+        <div class="price reveal d2">
+          <span class="tag">Professionnel</span>
+          <div class="amount">Sur devis</div>
+          <p class="desc">Séries, entreprises et projets en volume.</p>
+          <ul>
+            <li>Production en série</li>
+            <li>Tarif dégressif au volume</li>
+            <li>Gravure à votre charte / logo</li>
+            <li>Interlocuteur dédié</li>
+            <li>Facturation entreprise</li>
+            <li>Délais planifiés</li>
+          </ul>
+          <a href="contact.html" class="btn btn-ghost">Demander un devis</a>
+        </div>
+      </div>
+      <p class="form-note center mt-40">Tarifs indicatifs hors taxes, donnés à titre d'exemple. Le prix dépend du matériau, de la taille, de la complexité et de la quantité.</p>
+    </div>
+  </section>
+
+  <!-- ESTIMATEUR -->
+  <section class="section bg-2">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Estimation en ligne</span>
+        <h2 class="h-lg">Estimez votre <span class="metal-or">budget</span></h2>
+        <p class="lead">Un ordre de grandeur instantané. Pour un chiffrage exact, demandez votre devis gratuit.</p>
+      </div>
+
+      <div class="split" style="align-items:stretch">
+        <div class="card reveal" id="estimator">
+          <div class="field" style="margin-bottom:18px">
+            <label for="est-mat">Matériau</label>
+            <select id="est-mat">
+              <option value="0">Bois / MDF</option>
+              <option value="6">Verre / cristal</option>
+              <option value="8">Métal</option>
+              <option value="4">Cuir</option>
+              <option value="5">Ardoise / pierre</option>
+              <option value="3">Plexiglas</option>
+            </select>
+          </div>
+          <div class="slider-row"><label for="est-surf">Surface (cm²)</label><input type="range" id="est-surf" min="10" max="800" value="120"><output for="est-surf">120</output></div>
+          <div class="slider-row"><label for="est-qty">Quantité</label><input type="range" id="est-qty" min="1" max="100" value="1"><output for="est-qty">1</output></div>
+          <div class="field" style="margin-top:10px">
+            <label for="est-comp">Complexité du visuel</label>
+            <select id="est-comp">
+              <option value="1">Simple (texte, logo)</option>
+              <option value="1.4">Moyenne (illustration)</option>
+              <option value="1.9">Élevée (photo détaillée)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card reveal d1" id="est-result" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+          <span class="tag" style="font-size:.75rem;text-transform:uppercase;letter-spacing:3px;color:var(--or)">Estimation indicative</span>
+          <div style="margin:18px 0">
+            <div class="form-note">Prix unitaire estimé</div>
+            <div class="est-unit metal-or" style="font-family:var(--font-titre);font-size:2.2rem">—</div>
+          </div>
+          <div style="border-top:1px solid var(--gris);padding-top:18px">
+            <div class="form-note">Total estimé</div>
+            <div class="est-total metal-or" style="font-family:var(--font-titre);font-size:3rem">—</div>
+          </div>
+          <a href="contact.html" class="btn btn-or mt-40">Obtenir un devis précis</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPTIONS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Compléments</span>
+        <h2 class="h-lg">Options & <span class="metal-or">services</span></h2>
+      </div>
+      <div class="grid grid-4">
+        <div class="card reveal"><div class="ico">⚡</div><h3>Express 48h</h3><p>Production prioritaire pour les délais serrés.</p></div>
+        <div class="card reveal d1"><div class="ico">🎨</div><h3>Création graphique</h3><p>Conception de votre visuel par nos soins.</p></div>
+        <div class="card reveal d2"><div class="ico">🎁</div><h3>Emballage cadeau</h3><p>Écrin et présentation soignée.</p></div>
+        <div class="card reveal d3"><div class="ico">📦</div><h3>Expédition suivie</h3><p>Livraison protégée partout en France.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-2">
+    <div class="container">
+      <div class="cta-band reveal">
+        <h2 class="h-lg">Votre devis, <span class="metal-or">gratuit et sans engagement</span></h2>
+        <p>Décrivez votre projet, nous revenons vers vous sous 24h avec une estimation détaillée.</p>
+        <a href="contact.html" class="btn btn-or btn-lg" style="margin-top:10px">Demander mon devis</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

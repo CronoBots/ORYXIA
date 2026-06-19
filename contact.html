@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & devis — ORYXIA Design</title>
+  <meta name="description" content="Contactez ORYXIA Design pour un devis de gravure laser gratuit et personnalisé. Réponse sous 24h.">
+  <link rel="icon" href="assets/img/logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Contact</p>
+      <span class="eyebrow" style="justify-content:center">Parlons de votre projet</span>
+      <h1 class="h-xl">Demander un <span class="metal-or">devis</span></h1>
+      <p class="lead">Décrivez-nous votre idée : nous revenons vers vous sous 24h avec une estimation gratuite et des conseils sur mesure.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split" style="align-items:flex-start;gap:50px">
+      <!-- FORMULAIRE -->
+      <div class="reveal">
+        <div class="card">
+          <h2 class="h-md" style="margin-bottom:8px">Votre demande</h2>
+          <p class="form-note" style="margin-bottom:24px">Les champs marqués <span class="text-or">*</span> sont obligatoires.</p>
+          <div class="form-success" id="ok">✓ Merci ! Votre demande a bien été prise en compte (démonstration). Nous vous répondrons sous 24h.</div>
+          <form class="form" data-demo>
+            <div class="row">
+              <div class="field"><label>Prénom <span class="req">*</span></label><input type="text" required placeholder="Jean"></div>
+              <div class="field"><label>Nom <span class="req">*</span></label><input type="text" required placeholder="Dupont"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Email <span class="req">*</span></label><input type="email" required placeholder="jean.dupont@email.fr"></div>
+              <div class="field"><label>Téléphone</label><input type="tel" placeholder="06 00 00 00 00"></div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>Type de projet</label>
+                <select>
+                  <option>Cadeau personnalisé</option>
+                  <option>Médaille / trophée</option>
+                  <option>Objet professionnel / entreprise</option>
+                  <option>Décoration</option>
+                  <option>Série / production</option>
+                  <option>Autre</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Matériau souhaité</label>
+                <select>
+                  <option>Je ne sais pas encore</option>
+                  <option>Bois</option><option>Métal</option><option>Verre / cristal</option>
+                  <option>Cuir</option><option>Plexiglas</option><option>Ardoise / pierre</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label>Quantité</label><input type="number" min="1" value="1"></div>
+              <div class="field"><label>Délai souhaité</label><select><option>Standard</option><option>Express (48h)</option><option>Flexible</option></select></div>
+            </div>
+            <div class="field"><label>Décrivez votre projet <span class="req">*</span></label><textarea required placeholder="Objet, dimensions, texte/visuel à graver, occasion, budget indicatif…"></textarea></div>
+            <label style="display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--gris-clair)"><input type="checkbox" required style="accent-color:var(--or);margin-top:4px"> J'accepte d'être recontacté concernant ma demande.</label>
+            <button type="submit" class="btn btn-or btn-lg">Envoyer ma demande</button>
+            <p class="form-note">💡 Vous pouvez aussi préparer votre projet avec notre <a href="simulateur.html" class="text-or">simulateur de gravure</a>.</p>
+          </form>
+        </div>
+      </div>
+
+      <!-- INFOS -->
+      <div class="reveal d1" style="display:grid;gap:18px">
+        <div class="info-card"><div class="ic">✉</div><div><h4>Email</h4><a href="mailto:contact@oryxia-design.fr">contact@oryxia-design.fr</a></div></div>
+        <div class="info-card"><div class="ic">☎</div><div><h4>Téléphone</h4><a href="tel:+33600000000">06 00 00 00 00</a><p>Lun–Ven · 9h–18h</p></div></div>
+        <div class="info-card"><div class="ic">📍</div><div><h4>Atelier</h4><p>France — Expédition partout<br>Remise en main propre locale</p></div></div>
+        <div class="info-card"><div class="ic">⏱️</div><div><h4>Réactivité</h4><p>Réponse à votre devis sous 24h ouvrées.</p></div></div>
+        <div class="info-card"><div class="ic">◐</div><div><h4>Réseaux sociaux</h4><p>Suivez nos créations sur Instagram, Facebook & Pinterest.</p></div></div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(230,180,34,.12),transparent)">
+          <h3 style="font-size:1.15rem">Devis gratuit & sans engagement</h3>
+          <p>Chaque projet est unique. Nous prenons le temps de bien comprendre votre besoin avant de chiffrer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <script src="assets/js/main.js"></script>
+  <script>
+    // Lie le message de succès au formulaire
+    document.addEventListener('DOMContentLoaded', () => {
+      const f = document.querySelector('form[data-demo]');
+      const ok = document.getElementById('ok');
+      if (f && ok) f.prepend(ok);
+    });
+  </script>
+</body>
+</html>

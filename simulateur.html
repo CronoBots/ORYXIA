@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulateur de gravure médaille — ORYXIA Design</title>
+  <meta name="description" content="Importez une image et visualisez instantanément le rendu d'une gravure laser sur médaille, plaque ou médaillon. Choix du métal, profondeur, texte et export PNG.">
+  <link rel="icon" href="assets/img/logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>.hidden{display:none}</style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <section class="page-hero" style="padding-bottom:40px">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Simulateur</p>
+      <span class="eyebrow" style="justify-content:center">Outil exclusif</span>
+      <h1 class="h-xl">Simulateur de <span class="metal-or">gravure</span></h1>
+      <p class="lead">Importez une photo, un logo ou un dessin et découvrez en temps réel le rendu de votre gravure sur une médaille ou une plaque. Ajustez, personnalisez, téléchargez.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:50px">
+    <div class="container">
+      <div class="sim-wrap">
+
+        <!-- PANNEAU DE CONTRÔLE -->
+        <aside class="sim-panel">
+          <h3>Personnalisez</h3>
+          <p class="hint">Vos images restent dans votre navigateur — rien n'est envoyé sur un serveur.</p>
+
+          <div class="sim-group">
+            <label>1 · Votre image</label>
+            <div class="dropzone" id="sim-drop">
+              <div class="dz-ico">⬆</div>
+              <strong>Cliquez ou glissez une image</strong>
+              <div style="font-size:.8rem;margin-top:6px">PNG, JPG, SVG · logo, photo, dessin</div>
+            </div>
+            <input type="file" id="sim-file" accept="image/*" hidden>
+          </div>
+
+          <div class="sim-group">
+            <label>2 · Type de support</label>
+            <div class="chips">
+              <button class="chip active" data-shape="medal">🏅 Médaille</button>
+              <button class="chip" data-shape="round">⬤ Disque</button>
+              <button class="chip" data-shape="square">⬛ Carré</button>
+              <button class="chip" data-shape="plaque">▭ Plaque</button>
+              <button class="chip" data-shape="tag">🔖 Médaillon</button>
+            </div>
+          </div>
+
+          <div class="sim-group">
+            <label>3 · Matière</label>
+            <div class="chips">
+              <button class="chip active" data-mat="or">Or</button>
+              <button class="chip" data-mat="argent">Argent</button>
+              <button class="chip" data-mat="bronze">Bronze</button>
+              <button class="chip" data-mat="noir">Noir mat</button>
+              <button class="chip" data-mat="bois">Bois</button>
+            </div>
+          </div>
+
+          <div class="sim-group">
+            <label>4 · Réglages de gravure</label>
+            <div class="slider-row"><label>Profondeur</label><input type="range" id="ctl-depth" min="20" max="100" value="85"><span class="val" id="ctl-depth-val">85%</span></div>
+            <div class="slider-row"><label>Contraste</label><input type="range" id="ctl-contrast" min="0" max="100" value="35"><span class="val" id="ctl-contrast-val">35%</span></div>
+            <div class="slider-row"><label>Luminosité</label><input type="range" id="ctl-bright" min="-80" max="80" value="0"><span class="val" id="ctl-bright-val">0</span></div>
+            <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-top:8px;cursor:pointer">
+              <input type="checkbox" id="ctl-invert" style="accent-color:var(--or)"> Inverser (gravure claire sur fond foncé)
+            </label>
+          </div>
+
+          <div class="sim-group">
+            <label>5 · Texte gravé</label>
+            <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-bottom:12px;cursor:pointer">
+              <input type="checkbox" id="ctl-showtext" checked style="accent-color:var(--or)"> Afficher le texte
+            </label>
+            <input type="text" id="ctl-text" class="field text-input-mini" value="ORYXIA" placeholder="Titre" style="margin-bottom:10px;padding:11px 14px;background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
+            <input type="text" id="ctl-subtext" class="field text-input-mini" value="Édition limitée" placeholder="Sous-titre" style="padding:11px 14px;background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
+          </div>
+        </aside>
+
+        <!-- SCÈNE -->
+        <div>
+          <div class="sim-stage">
+            <canvas id="sim-canvas"></canvas>
+            <div class="sim-actions">
+              <button class="btn btn-or" id="sim-download">⬇ Télécharger l'aperçu</button>
+              <button class="btn btn-ghost" id="sim-reset">Réinitialiser l'image</button>
+              <a href="contact.html" class="btn btn-ghost">Commander ce modèle</a>
+            </div>
+          </div>
+          <p class="form-note center mt-40">💡 Astuce : un logo ou une image avec de bons contrastes (noir & blanc) donne le plus beau rendu gravé. Cette simulation est indicative ; le rendu final dépend du matériau réel.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSEILS -->
+  <section class="section bg-2">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Pour un rendu optimal</span>
+        <h2 class="h-lg">Conseils <span class="metal-or">images</span></h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card reveal"><div class="ico">🌓</div><h3>Misez sur le contraste</h3><p>Les images nettes et contrastées (logos, silhouettes, photos N&B) se gravent le mieux.</p></div>
+        <div class="card reveal d1"><div class="ico">🔍</div><h3>Haute résolution</h3><p>Privilégiez une image de bonne définition pour conserver les détails fins à la gravure.</p></div>
+        <div class="card reveal d2"><div class="ico">✍️</div><h3>Simplifiez</h3><p>Un visuel épuré rend souvent mieux qu'une image surchargée de petits détails.</p></div>
+      </div>
+      <div class="center mt-40 reveal"><a href="contact.html" class="btn btn-or btn-lg">Valider mon projet avec un expert</a></div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/simulateur.js"></script>
+</body>
+</html>

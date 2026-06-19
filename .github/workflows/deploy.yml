@@ -1,0 +1,42 @@
+name: Déploiement GitHub Pages
+
+on:
+  push:
+    branches:
+      - claude/laser-engraving-site-5t1dyo
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule exécution de déploiement à la fois
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configuration Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload de l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Déploiement
+        id: deployment
+        uses: actions/deploy-pages@v4
