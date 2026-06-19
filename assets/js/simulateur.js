@@ -20,10 +20,11 @@
   const mctx = med.getContext("2d");
 
   const state = {
-    img: null, shape: "medal", material: "laiton",
+    img: null, shape: "round", material: "laiton",
     contrast: 50, brightness: 0, depth: 70, detail: 55, invert: false, polish: 60,
-    tilt: true, text: "ORYXIA", subtext: "Édition limitée", showText: true,
+    tilt: false, text: "ORYXIA", subtext: "Édition limitée", showText: true,
   };
+  const DEFAULT_IMG = "assets/img/logo.jpeg";
 
   // kind: metal | anodized | wood
   const MAT = {
@@ -283,14 +284,37 @@
     if (state.showText) drawFlatText(octx, cx, y0 + h - 44, m);
   }
 
-  /* ---------- ruban (médaille) ---------- */
+  /* ---------- ruban (médaille) : deux pans drapés ---------- */
+  function ribbonGrad(x0, x1, hi, mid, lo) {
+    const g = ctx.createLinearGradient(x0, 0, x1, 0);
+    g.addColorStop(0, lo); g.addColorStop(.35, mid); g.addColorStop(.5, hi); g.addColorStop(.65, mid); g.addColorStop(1, lo);
+    return g;
+  }
   function drawRibbon(cx, topY) {
-    const w = 120; ctx.save();
-    const grd = ctx.createLinearGradient(cx - w / 2, 0, cx + w / 2, 0);
-    grd.addColorStop(0, "#7a1320"); grd.addColorStop(.5, "#c0233a"); grd.addColorStop(1, "#7a1320");
-    ctx.fillStyle = grd; ctx.beginPath();
-    ctx.moveTo(cx - w / 2, 30); ctx.lineTo(cx - 26, topY); ctx.lineTo(cx + 26, topY); ctx.lineTo(cx + w / 2, 30);
-    ctx.lineTo(cx + w / 2 - 22, 30); ctx.lineTo(cx, topY - 56); ctx.lineTo(cx - w / 2 + 22, 30); ctx.closePath(); ctx.fill(); ctx.restore();
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,.5)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6;
+    const top = 18, sp = 26; // demi-écart au sommet de la pièce
+    // pan gauche
+    ctx.beginPath();
+    ctx.moveTo(cx - 70, top); ctx.lineTo(cx - 18, top);
+    ctx.lineTo(cx - sp + 6, topY); ctx.lineTo(cx - sp - 28, topY); ctx.closePath();
+    ctx.fillStyle = ribbonGrad(cx - 78, cx - 10, "#d83048", "#a51f30", "#5e0e18"); ctx.fill();
+    // pan droit
+    ctx.beginPath();
+    ctx.moveTo(cx + 18, top); ctx.lineTo(cx + 70, top);
+    ctx.lineTo(cx + sp + 28, topY); ctx.lineTo(cx + sp - 6, topY); ctx.closePath();
+    ctx.fillStyle = ribbonGrad(cx + 10, cx + 78, "#d83048", "#a51f30", "#5e0e18"); ctx.fill();
+    ctx.shadowColor = "transparent";
+    // pli central (revers plus sombre)
+    ctx.beginPath();
+    ctx.moveTo(cx - 18, top); ctx.lineTo(cx + 18, top);
+    ctx.lineTo(cx + sp - 6, topY); ctx.lineTo(cx - sp + 6, topY); ctx.closePath();
+    ctx.fillStyle = "rgba(60,8,14,.85)"; ctx.fill();
+    // lieserés dorés
+    ctx.strokeStyle = "rgba(230,180,34,.5)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx - 64, top); ctx.lineTo(cx - sp - 22, topY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 64, top); ctx.lineTo(cx + sp + 22, topY); ctx.stroke();
+    ctx.restore();
   }
 
   /* ---------- textes ---------- */
@@ -376,9 +400,9 @@
 
       // 4) compose la pièce (inclinée en 3D ou à plat)
       if (tilt) {
-        const params = [92, 24, 70, S - 90]; // topInset, botInset, topY, botY
+        const params = [66, 34, 60, S - 78]; // topInset, botInset, topY, botY (incl. douce -> reste rond)
         const edge = buildEdge();
-        drawTilted(edge, ctx, params[0], params[1], params[2], params[3], 22); // tranche
+        drawTilted(edge, ctx, params[0], params[1], params[2], params[3], 20); // tranche
         drawTilted(med, ctx, params[0], params[1], params[2], params[3], 0);   // face
       } else {
         ctx.drawImage(med, 0, 0);
@@ -403,6 +427,13 @@
     reader.onload = e => { const img = new Image(); img.onload = () => { state.img = img; render(); }; img.src = e.target.result; };
     reader.readAsDataURL(file);
   }
+  // exemple par défaut : le logo ORYXIA déjà gravé
+  function loadDefault() {
+    const img = new Image();
+    img.onload = () => { state.img = img; render(); };
+    img.onerror = () => { state.img = null; render(); };
+    img.src = DEFAULT_IMG;
+  }
 
   /* ---------- UI ---------- */
   function bind() {
@@ -424,8 +455,8 @@
     document.getElementById("ctl-text")?.addEventListener("input", e => { state.text = e.target.value; render(); });
     document.getElementById("ctl-subtext")?.addEventListener("input", e => { state.subtext = e.target.value; render(); });
     document.getElementById("sim-download")?.addEventListener("click", () => { const a = document.createElement("a"); a.download = "oryxia-simulation-gravure.png"; a.href = canvas.toDataURL("image/png"); a.click(); });
-    document.getElementById("sim-reset")?.addEventListener("click", () => { state.img = null; render(); });
+    document.getElementById("sim-reset")?.addEventListener("click", () => { loadDefault(); });
   }
 
-  bind(); render();
+  bind(); loadDefault();
 })();
