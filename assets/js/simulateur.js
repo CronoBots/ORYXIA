@@ -148,8 +148,8 @@
   }
   function angBand(ang, c, w, a) { let d = ang - c; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a * Math.exp(-(d * d) / w); }
 
-  /* ---------- rendu rond (médaille / disque) sur le calque ---------- */
-  function renderRound(cyShift, octx) {
+  /* ---------- rendu rond (médaille / disque / pièce) sur le calque ---------- */
+  function renderRound(cyShift, octx, reeded) {
     const m = MAT[state.material];
     const G = geometry();
     const cx = S / 2, cy = S / 2 + (cyShift || 0), R = 300;
@@ -209,7 +209,8 @@
           let lit = 0.42 + bulge * (0.42 + 0.55 * facing) + (grain[i] - 0.5) * 0.02;
           const c2 = metalColor(0.2 + lit * 1.05, m);
           const eIn = Math.max(0, (0.06 - u) / 0.06), eOut = Math.max(0, (u - 0.94) / 0.06);
-          const k = (1 - eIn * 0.5) * (1 - eOut * 0.55);
+          let k = (1 - eIn * 0.5) * (1 - eOut * 0.55);
+          if (reeded) k *= (0.80 + 0.20 * Math.sin(a * 150)); // tranche striée (pièce)
           R0 = c2[0] * k; G0 = c2[1] * k; B0 = c2[2] * k;
         } else {
           // tranche externe sombre + léger reflet de chant
@@ -297,6 +298,93 @@
     if (type === "tag") { octx.beginPath(); octx.arc(cx, y0 + 40, 20, 0, Math.PI * 2); octx.lineWidth = 12; octx.strokeStyle = `rgb(${m.shadow})`; octx.stroke(); octx.fillStyle = "#0a0a0c"; octx.fill(); }
     if (state.showText) drawFlatText(octx, cx, y0 + h - 44, m);
   }
+
+  /* ---------- couteau damas à manche laiton ---------- */
+  function inRR(x, y, x0, x1, y0, y1, r) {
+    if (x < x0 || x > x1 || y < y0 || y > y1) return false;
+    if (x < x0 + r && y < y0 + r) return (x - (x0 + r)) ** 2 + (y - (y0 + r)) ** 2 <= r * r;
+    if (x > x1 - r && y < y0 + r) return (x - (x1 - r)) ** 2 + (y - (y0 + r)) ** 2 <= r * r;
+    if (x < x0 + r && y > y1 - r) return (x - (x0 + r)) ** 2 + (y - (y1 - r)) ** 2 <= r * r;
+    if (x > x1 - r && y > y1 - r) return (x - (x1 - r)) ** 2 + (y - (y1 - r)) ** 2 <= r * r;
+    return true;
+  }
+  function renderKnife(octx) {
+    const G = geometry(), grain = G.grain, m = MAT.laiton;
+    const sh = m.shadow, mid = m.mid, hi = m.high;
+    const brass = (t) => { t = Math.max(0, Math.min(1, t)); if (t < .5) { const k = t / .5; return [lerp(sh[0], mid[0], k), lerp(sh[1], mid[1], k), lerp(sh[2], mid[2], k)]; } const k = (t - .5) / .5; return [lerp(mid[0], hi[0], k), lerp(mid[1], hi[1], k), lerp(mid[2], hi[2], k)]; };
+    const steelL = [202, 207, 214], steelD = [92, 96, 104];
+    const cyc = 380, bh = 150, bx0 = 70, bx1 = 392;
+    const hx0 = 422, hx1 = 706, hy0 = 302, hy1 = 458, hr = 70, hHalf = (hy1 - hy0) / 2;
+    const hcx = (hx0 + hx1) / 2, placeR = hHalf - 12;
+    const Hf = state.img ? heightField(placeR, Math.round(hcx - placeR), Math.round(cyc - placeR)) : null;
+    let diff = null, spec = null;
+    if (Hf) {
+      const strength = (state.depth / 100) * 6 + 1, detail = (state.detail / 100) * 2.2 + 0.5;
+      const L = [-0.4, -0.6, 0.69]; const Ll = Math.hypot(L[0], L[1], L[2]); L[0] /= Ll; L[1] /= Ll; L[2] /= Ll;
+      const Hh = [L[0], L[1], L[2] + 1]; const Hl = Math.hypot(Hh[0], Hh[1], Hh[2]); Hh[0] /= Hl; Hh[1] /= Hl; Hh[2] /= Hl;
+      diff = new Float32Array(S * S); spec = new Float32Array(S * S); const shin = 18 + state.polish / 100 * 50;
+      for (let y = 1; y < S - 1; y++) for (let x = 1; x < S - 1; x++) {
+        const i = y * S + x; const dx = (Hf[i + 1] - Hf[i - 1]) * detail, dy = (Hf[i + S] - Hf[i - S]) * detail;
+        let ax = -dx * strength, ay = -dy * strength, az = 1; const nl = Math.sqrt(ax * ax + ay * ay + 1); ax /= nl; ay /= nl; az /= nl;
+        diff[i] = ax * L[0] + ay * L[1] + az * L[2] - L[2];
+        let s = ax * Hh[0] + ay * Hh[1] + az * Hh[2]; spec[i] = s > 0 ? Math.pow(s, shin) : 0;
+      }
+    }
+    const polish = state.polish / 100;
+    const out = octx.createImageData(S, S), o = out.data;
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const i = y * S + x; let R, Gc, B, hit = false;
+      // --- lame damas ---
+      const t = (x - bx0) / (bx1 - bx0);
+      if (x >= bx0 && x <= bx1 && t >= 0) {
+        const halfh = (bh / 2) * Math.sqrt(Math.min(1, t));
+        const top = cyc - halfh, bot = cyc + halfh * 0.92;
+        if (y >= top - 1 && y <= bot + 1) {
+          const turb = grain[i] - 0.5;
+          const patt = Math.sin(x * 0.05 + 3.2 * Math.sin(y * 0.025 + turb * 6) + turb * 8);
+          const layer = patt > 0 ? 1 : 0;
+          const cyl = Math.max(0, 1 - Math.pow((y - cyc) / (bh * 0.7), 2));
+          const cf = 0.55 + 0.5 * cyl;
+          R = (steelD[0] + (steelL[0] - steelD[0]) * layer) * cf;
+          Gc = (steelD[1] + (steelL[1] - steelD[1]) * layer) * cf;
+          B = (steelD[2] + (steelL[2] - steelD[2]) * layer) * cf;
+          const eb = Math.max(0, 1 - Math.abs(y - bot) / 8) * 0.5; R += 255 * eb; Gc += 255 * eb; B += 255 * eb;
+          const sp = Math.max(0, 1 - Math.abs(y - top) / 6) * 0.35; R += 230 * sp; Gc += 235 * sp; B += 240 * sp;
+          hit = true;
+        }
+      }
+      // --- mitre laiton ---
+      if (!hit && x >= 388 && x <= 421 && Math.abs(y - cyc) <= bh / 2 + 6) {
+        const c = brass(0.5 + 0.42 * (-(y - cyc) / bh)); R = c[0]; Gc = c[1]; B = c[2]; hit = true;
+      }
+      // --- manche laiton (gravure) ---
+      if (!hit && inRR(x, y, hx0, hx1, hy0, hy1, hr)) {
+        const topl = -(y - cyc) / (hy1 - hy0) + 0.5;
+        const hbb = Math.max(0, 1 - Math.pow((y - cyc) / hHalf, 2));
+        let c = brass(0.35 + 0.5 * topl + 0.15 * hbb); R = c[0]; Gc = c[1]; B = c[2];
+        if (Hf) { const e = engrave(R, Gc, B, Hf[i], diff ? diff[i] : 0, spec ? spec[i] : 0, m, "metal", polish); R = e[0]; Gc = e[1]; B = e[2]; }
+        // arête sombre du contour du manche
+        hit = true;
+      }
+      if (!hit) continue; // transparent
+      o[i * 4] = Math.min(255, R); o[i * 4 + 1] = Math.min(255, Gc); o[i * 4 + 2] = Math.min(255, B); o[i * 4 + 3] = 255;
+    }
+    octx.putImageData(out, 0, 0);
+    // rivets laiton
+    [480, 564, 648].forEach(rx => {
+      const g = octx.createRadialGradient(rx - 4, cyc - 4, 1, rx, cyc, 13);
+      g.addColorStop(0, `rgb(${hi})`); g.addColorStop(1, `rgb(${sh})`);
+      octx.beginPath(); octx.arc(rx, cyc, 13, 0, Math.PI * 2); octx.fillStyle = g; octx.fill();
+      octx.lineWidth = 1.5; octx.strokeStyle = `rgba(${sh},.8)`; octx.stroke();
+    });
+    // texte gravé sur la lame
+    if (state.showText && state.text) {
+      octx.save(); octx.translate(210, cyc); octx.font = "700 22px Cinzel, serif"; octx.textAlign = "center"; octx.textBaseline = "middle";
+      octx.fillStyle = "rgba(40,44,50,.85)"; octx.fillText(state.text.toUpperCase(), 0, 1);
+      octx.fillStyle = "rgba(235,238,242,.5)"; octx.fillText(state.text.toUpperCase(), 0, -0.5); octx.restore();
+    }
+  }
+
 
   /* ---------- ruban (médaille) : deux pans drapés ---------- */
   function ribbonGrad(x0, x1, hi, mid, lo) {
@@ -399,15 +487,18 @@
     if (pending) return; pending = true;
     requestAnimationFrame(() => {
       pending = false;
-      const tilt = state.tilt;
+      const tilt = state.tilt && state.shape !== "knife";
 
-      // 1) dessine la face de la pièce sur le calque (transparent autour)
+      // 1) dessine la pièce sur le calque (transparent autour)
       mctx.clearRect(0, 0, S, S);
-      if (state.shape === "medal" || state.shape === "round") renderRound(0, mctx);
+      if (state.shape === "knife") renderKnife(mctx);
+      else if (state.shape === "coin") renderRound(0, mctx, true);
+      else if (state.shape === "medal" || state.shape === "round") renderRound(0, mctx);
       else renderRect(state.shape, mctx);
 
       // 2) scène (fond + ombre portée, position selon la vue)
-      drawScene(S / 2, tilt ? S / 2 + 70 : S / 2 + 30, 300);
+      if (state.shape === "knife") drawScene(S / 2, 462, 340);
+      else drawScene(S / 2, tilt ? S / 2 + 70 : S / 2 + 30, 300);
 
       // 3) ruban (médaille) derrière la pièce
       if (state.shape === "medal") drawRibbon(S / 2, tilt ? 150 : S / 2 - 222);
