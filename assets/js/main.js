@@ -228,10 +228,25 @@
 
   /* Apparition en cascade des grilles */
   function gridReveals() {
-    const groups = document.querySelectorAll(".grid, .price-grid, .testi");
+    const groups = document.querySelectorAll(".grid, .price-grid, .testi, .gallery");
     if (!("IntersectionObserver" in window)) { groups.forEach(g => g.classList.add("in")); return; }
-    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.15 });
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.1 });
     groups.forEach(g => io.observe(g));
+  }
+
+  /* Lightbox (agrandissement des visuels) */
+  function lightbox() {
+    const imgs = document.querySelectorAll(".g-img, .visual.render img, .product-shot img");
+    if (!imgs.length) return;
+    const box = document.createElement("div"); box.id = "lightbox";
+    box.innerHTML = '<button class="lb-close" aria-label="Fermer">✕</button><img alt="">';
+    document.body.appendChild(box);
+    const big = box.querySelector("img");
+    const open = (src, alt) => { big.src = src; big.alt = alt || ""; box.classList.add("show"); document.body.classList.add("menu-open"); };
+    const close = () => { box.classList.remove("show"); document.body.classList.remove("menu-open"); };
+    imgs.forEach(im => { im.style.cursor = "zoom-in"; im.addEventListener("click", () => open(im.currentSrc || im.src, im.alt)); });
+    box.addEventListener("click", (e) => { if (e.target === box || e.target.classList.contains("lb-close")) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
   }
 
   /* Compteurs animés */
@@ -345,6 +360,7 @@
     // effets premium
     scrollUI();
     gridReveals();
+    lightbox();
     counters();
     magnetic();
     tiltCards();

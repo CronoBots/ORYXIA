@@ -639,3 +639,40 @@ body.menu-open #scroll-progress { opacity: 0; }
 .product-shot { position: relative; border-radius: 22px; overflow: hidden; border: 1px solid var(--gris); box-shadow: var(--shadow); }
 .product-shot img { width: 100%; display: block; }
 .product-shot .tag-pill { position: absolute; top: 16px; left: 16px; background: rgba(10,10,12,.7); backdrop-filter: blur(6px); }
+
+/* =========================================================
+   GALERIE : cascade, reflet, lightbox
+   ========================================================= */
+.gallery .g-item { opacity: 0; transform: translateY(26px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
+.gallery.in .g-item { opacity: 1; transform: none; }
+.gallery.in .g-item:nth-child(2){transition-delay:.06s}.gallery.in .g-item:nth-child(3){transition-delay:.12s}
+.gallery.in .g-item:nth-child(4){transition-delay:.18s}.gallery.in .g-item:nth-child(5){transition-delay:.24s}
+.gallery.in .g-item:nth-child(6){transition-delay:.30s}.gallery.in .g-item:nth-child(7){transition-delay:.36s}
+.gallery.in .g-item:nth-child(8){transition-delay:.42s}.gallery.in .g-item:nth-child(9){transition-delay:.48s}
+.gallery.in .g-item:nth-child(n+10){transition-delay:.54s}
+
+/* Reflet diagonal au survol des visuels produits */
+.g-item, .visual.render { position: relative; }
+.g-item .g-img, .visual.render img { position: relative; z-index: 0; }
+.g-item::after, .visual.render::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.18) 48%, transparent 62%);
+  transform: translateX(-60%); transition: opacity .2s;
+}
+.g-item:hover::after, .visual.render:hover::before { opacity: 1; animation: sheenSweep .8s ease forwards; }
+@keyframes sheenSweep { from { transform: translateX(-60%); } to { transform: translateX(60%); } }
+
+/* Lightbox */
+#lightbox {
+  position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center;
+  background: rgba(6,6,8,.92); backdrop-filter: blur(8px); padding: 5vw;
+  opacity: 0; visibility: hidden; transition: opacity .3s; cursor: zoom-out;
+}
+#lightbox.show { opacity: 1; visibility: visible; }
+#lightbox img { max-width: min(92vw, 760px); max-height: 88vh; border-radius: 16px; box-shadow: 0 40px 100px -20px rgba(0,0,0,.9); transform: scale(.95); transition: transform .3s; }
+#lightbox.show img { transform: scale(1); }
+#lightbox .lb-close {
+  position: absolute; top: 22px; right: 26px; width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,.08); border: 1px solid var(--gris); color: var(--blanc); font-size: 1.1rem; cursor: pointer; transition: var(--transition);
+}
+#lightbox .lb-close:hover { background: var(--or); color: #1a1206; border-color: var(--or); transform: rotate(90deg); }
