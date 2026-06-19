@@ -200,6 +200,131 @@
     update();
   }
 
+  /* ============ EFFETS & ANIMATIONS PREMIUM ============ */
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  /* Barre de progression + retour en haut */
+  function scrollUI() {
+    const bar = document.createElement("div"); bar.id = "scroll-progress"; document.body.appendChild(bar);
+    const top = document.createElement("button"); top.id = "to-top"; top.innerHTML = "↑"; top.setAttribute("aria-label", "Haut de page"); document.body.appendChild(top);
+    top.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
+      top.classList.toggle("show", window.scrollY > 500);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  }
+
+  /* Apparition en cascade des grilles */
+  function gridReveals() {
+    const groups = document.querySelectorAll(".grid, .price-grid, .testi");
+    if (!("IntersectionObserver" in window)) { groups.forEach(g => g.classList.add("in")); return; }
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.15 });
+    groups.forEach(g => io.observe(g));
+  }
+
+  /* Compteurs animés */
+  function counters() {
+    const els = document.querySelectorAll(".count[data-to]");
+    if (!els.length) return;
+    const run = (el) => {
+      const to = parseFloat(el.dataset.to), dec = +(el.dataset.dec || 0);
+      const pre = el.dataset.prefix || "", suf = el.dataset.suffix || "", dur = 1400;
+      let start = null;
+      const step = (t) => {
+        if (!start) start = t; const p = Math.min((t - start) / dur, 1);
+        const val = (to * (1 - Math.pow(1 - p, 3)));
+        el.textContent = pre + (dec ? val.toFixed(dec).replace(".", ",") : Math.round(val)) + suf;
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    if (reduce || !("IntersectionObserver" in window)) { els.forEach(e => e.textContent = (e.dataset.prefix || "") + e.dataset.to + (e.dataset.suffix || "")); return; }
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } }), { threshold: 0.5 });
+    els.forEach(e => io.observe(e));
+  }
+
+  /* Boutons magnétiques */
+  function magnetic() {
+    if (!finePointer || reduce) return;
+    document.querySelectorAll(".btn-lg").forEach(b => {
+      b.addEventListener("mousemove", (e) => {
+        const r = b.getBoundingClientRect();
+        b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px, ${(e.clientY - r.top - r.height / 2) * .35}px)`;
+      });
+      b.addEventListener("mouseleave", () => { b.style.transform = ""; });
+    });
+  }
+
+  /* Cartes : tilt 3D + halo qui suit la souris */
+  function tiltCards() {
+    if (!finePointer || reduce) return;
+    document.querySelectorAll(".card, .price").forEach(c => {
+      c.addEventListener("mousemove", (e) => {
+        const r = c.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        c.style.setProperty("--mx", px * 100 + "%"); c.style.setProperty("--my", py * 100 + "%");
+        c.style.transform = `perspective(900px) translateY(-8px) rotateX(${(.5 - py) * 7}deg) rotateY(${(px - .5) * 9}deg)`;
+      });
+      c.addEventListener("mouseleave", () => { c.style.transform = ""; });
+    });
+  }
+
+  /* Logo du hero en parallaxe */
+  function heroParallax() {
+    if (!finePointer || reduce) return;
+    const logo = document.querySelector(".hero-logo"); const hero = document.querySelector(".hero");
+    if (!logo || !hero) return;
+    hero.addEventListener("mousemove", (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      logo.style.transform = `translate(${x * 26}px, ${y * 22}px) rotate(${x * 3}deg)`;
+    });
+    hero.addEventListener("mouseleave", () => { logo.style.transform = ""; });
+  }
+
+  /* Curseur lumineux doré (desktop) */
+  function cursorGlow() {
+    if (!finePointer || reduce) return;
+    const g = document.createElement("div"); g.id = "cursor-glow"; document.body.appendChild(g);
+    window.addEventListener("mousemove", (e) => { g.style.opacity = "1"; g.style.left = e.clientX + "px"; g.style.top = e.clientY + "px"; });
+    window.addEventListener("mouseleave", () => g.style.opacity = "0");
+  }
+
+  /* Particules dorées (hero + en-têtes de page) */
+  function particles() {
+    if (reduce) return;
+    const host = document.querySelector(".hero") || document.querySelector(".page-hero");
+    if (!host) return;
+    const cv = document.createElement("canvas"); cv.className = "fx-particles"; host.prepend(cv);
+    const cx = cv.getContext("2d"); let w, h, parts;
+    const N = Math.min(70, Math.round(window.innerWidth / 22));
+    const resize = () => { w = cv.width = host.offsetWidth; h = cv.height = host.offsetHeight; };
+    const make = () => Array.from({ length: N }, () => ({
+      x: Math.random() * w, y: Math.random() * h, r: Math.random() * 2 + .4,
+      vy: -(Math.random() * .35 + .12), vx: (Math.random() - .5) * .25,
+      a: Math.random() * .5 + .15, tw: Math.random() * Math.PI * 2,
+    }));
+    resize(); parts = make();
+    let raf;
+    const tick = () => {
+      cx.clearRect(0, 0, w, h);
+      parts.forEach(p => {
+        p.y += p.vy; p.x += p.vx; p.tw += .04;
+        if (p.y < -5) { p.y = h + 5; p.x = Math.random() * w; }
+        const al = p.a * (0.6 + 0.4 * Math.sin(p.tw));
+        cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        cx.fillStyle = `rgba(245,208,97,${al})`;
+        cx.shadowColor = "rgba(230,180,34,.8)"; cx.shadowBlur = 8; cx.fill();
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    window.addEventListener("resize", () => { cancelAnimationFrame(raf); resize(); parts = make(); tick(); });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     buildHeader();
     buildFooter();
@@ -208,5 +333,14 @@
     galleryFilters();
     forms();
     estimator();
+    // effets premium
+    scrollUI();
+    gridReveals();
+    counters();
+    magnetic();
+    tiltCards();
+    heroParallax();
+    cursorGlow();
+    particles();
   });
 })();

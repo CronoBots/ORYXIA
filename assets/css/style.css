@@ -480,3 +480,126 @@ h1,h2,h3,h4 { font-family: var(--font-titre); font-weight: 600; line-height: 1.1
   .price.featured { transform:none; }
   .hero-stats { gap: 26px; }
 }
+
+/* =========================================================
+   ANIMATIONS & EFFETS PREMIUM (additifs)
+   ========================================================= */
+
+/* Barre de progression de défilement */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: var(--or-gradient); z-index: 200;
+  box-shadow: 0 0 12px rgba(230,180,34,.7);
+  transition: width .1s linear;
+}
+
+/* Bouton retour en haut */
+#to-top {
+  position: fixed; right: 24px; bottom: 24px; z-index: 120;
+  width: 50px; height: 50px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--or-gradient); color: #1a1206; font-size: 1.3rem; font-weight: 700;
+  cursor: pointer; border: none; opacity: 0; visibility: hidden; transform: translateY(20px) scale(.8);
+  transition: var(--transition); box-shadow: 0 10px 30px -8px rgba(230,180,34,.6);
+}
+#to-top.show { opacity: 1; visibility: visible; transform: none; }
+#to-top:hover { transform: translateY(-4px); box-shadow: 0 16px 40px -8px rgba(230,180,34,.8); }
+
+/* Particules dorées du hero */
+.fx-particles { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .8; }
+.hero > .container, .page-hero > .container { position: relative; z-index: 2; }
+
+/* Texte métal : reflet animé */
+.metal-or {
+  background: linear-gradient(110deg, #b8860b 0%, #f5d061 25%, #fff3c4 42%, #f5d061 60%, #b8860b 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: shineText 7s linear infinite;
+}
+@keyframes shineText { 0% { background-position: 200% 0; } 100% { background-position: -50% 0; } }
+
+/* Boutons : balayage lumineux */
+.btn { isolation: isolate; }
+.btn-or::after, .btn-light::after {
+  content: ""; position: absolute; top: 0; left: -120%; width: 60%; height: 100%; z-index: 1;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg); transition: left .6s ease;
+}
+.btn-or:hover::after, .btn-light:hover::after { left: 140%; }
+
+/* Lueur pulsée sur le bandeau CTA */
+.cta-band { animation: ctaGlow 4.5s ease-in-out infinite; }
+@keyframes ctaGlow {
+  0%,100% { box-shadow: 0 0 0 1px rgba(230,180,34,.3), 0 0 40px -10px rgba(230,180,34,.25); }
+  50% { box-shadow: 0 0 0 1px rgba(230,180,34,.55), 0 0 70px -6px rgba(230,180,34,.45); }
+}
+
+/* Cartes : profondeur 3D au survol (JS ajoute le tilt) */
+.card, .price, .mat-card, .testi .t, .info-card { transform-style: preserve-3d; will-change: transform; }
+.card .ico { transition: var(--transition); }
+.card:hover .ico { transform: translateZ(30px) scale(1.08); box-shadow: 0 10px 24px -8px rgba(230,180,34,.5); }
+
+/* Halo qui suit la souris sur les cartes */
+.card::after, .price::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), rgba(230,180,34,.14), transparent 60%);
+  opacity: 0; transition: opacity .4s; z-index: 0;
+}
+.card:hover::after, .price:hover::after { opacity: 1; }
+.card > *, .price > * { position: relative; z-index: 1; }
+
+/* Variantes de révélation au scroll */
+.reveal-l { opacity: 0; transform: translateX(-40px); transition: opacity .7s ease, transform .7s ease; }
+.reveal-r { opacity: 0; transform: translateX(40px); transition: opacity .7s ease, transform .7s ease; }
+.reveal-zoom { opacity: 0; transform: scale(.9); transition: opacity .7s ease, transform .7s ease; }
+.reveal-l.in, .reveal-r.in, .reveal-zoom.in { opacity: 1; transform: none; }
+
+/* Apparition en cascade automatique des grilles */
+.grid > *, .price-grid > *, .testi > * { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
+.grid.in > *, .price-grid.in > *, .testi.in > * { opacity: 1; transform: none; }
+.grid.in > *:nth-child(1){transition-delay:.05s}.grid.in > *:nth-child(2){transition-delay:.12s}
+.grid.in > *:nth-child(3){transition-delay:.19s}.grid.in > *:nth-child(4){transition-delay:.26s}
+.grid.in > *:nth-child(5){transition-delay:.33s}.grid.in > *:nth-child(6){transition-delay:.40s}
+.grid.in > *:nth-child(7){transition-delay:.47s}.grid.in > *:nth-child(8){transition-delay:.54s}
+.grid.in > *:nth-child(9){transition-delay:.61s}
+.price-grid.in > *:nth-child(2){transition-delay:.12s}.price-grid.in > *:nth-child(3){transition-delay:.24s}
+.testi.in > *:nth-child(2){transition-delay:.12s}.testi.in > *:nth-child(3){transition-delay:.24s}
+
+/* Logo du hero : flottement + lueur pulsée */
+.hero-visual .glow { animation: glowPulse 5s ease-in-out infinite; }
+@keyframes glowPulse { 0%,100% { opacity:.7; transform: scale(1); } 50% { opacity:1; transform: scale(1.08); } }
+
+/* Soulignement animé des titres de section */
+.section-head .eyebrow::before { animation: lineGrow 2s ease-in-out infinite alternate; }
+@keyframes lineGrow { from { width: 18px; } to { width: 46px; } }
+
+/* Liens de nav : glissement doux déjà géré ; ajout d'un éclat */
+.nav-cta { position: relative; overflow: hidden; }
+
+/* Chips / filtres : rebond léger */
+.chip:active, .filter-btn:active { transform: scale(.94); }
+
+/* Effet d'entrée de page */
+@keyframes fadeInUp { from { opacity:0; transform: translateY(16px);} to {opacity:1; transform:none;} }
+.page-hero h1 { animation: fadeInUp .8s ease both; }
+.page-hero .lead { animation: fadeInUp .8s ease .15s both; }
+.page-hero .breadcrumb { animation: fadeInUp .8s ease .05s both; }
+
+/* Curseur lumineux global (desktop) */
+#cursor-glow {
+  position: fixed; width: 380px; height: 380px; border-radius: 50%; left: 0; top: 0;
+  transform: translate(-50%, -50%); pointer-events: none; z-index: 1; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(230,180,34,.08), transparent 65%);
+  opacity: 0; transition: opacity .4s;
+}
+
+/* Compteurs */
+.count { font-variant-numeric: tabular-nums; }
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  .fx-particles, #cursor-glow { display: none !important; }
+}
+@media (hover: none) { #cursor-glow { display: none; } }
