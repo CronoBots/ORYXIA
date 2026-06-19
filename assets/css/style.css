@@ -619,3 +619,23 @@ h1,h2,h3,h4 { font-family: var(--font-titre); font-weight: 600; line-height: 1.1
 /* Masque les éléments flottants quand le menu mobile est ouvert */
 body.menu-open #to-top { opacity: 0 !important; visibility: hidden !important; }
 body.menu-open #scroll-progress { opacity: 0; }
+
+/* =========================================================
+   VISUELS PRODUITS (rendus réels)
+   ========================================================= */
+.g-item { overflow: hidden; }
+.g-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; transition: transform .6s cubic-bezier(.22,.61,.36,1); background: #0c0c0e; }
+.g-item:hover .g-img { transform: scale(1.07); }
+
+/* Visuels des sections (remplacent les emojis) */
+.visual.render { padding: 0; overflow: hidden; }
+.visual.render img { width: 100%; height: 100%; min-height: 380px; object-fit: cover; display: block; }
+.visual.render::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 80% at 30% 20%, transparent 55%, rgba(0,0,0,.35));
+}
+
+/* Carte produit avec image (hero / accueil) */
+.product-shot { position: relative; border-radius: 22px; overflow: hidden; border: 1px solid var(--gris); box-shadow: var(--shadow); }
+.product-shot img { width: 100%; display: block; }
+.product-shot .tag-pill { position: absolute; top: 16px; left: 16px; background: rgba(10,10,12,.7); backdrop-filter: blur(6px); }
