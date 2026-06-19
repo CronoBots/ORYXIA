@@ -69,8 +69,15 @@
 
     const burger = document.getElementById("burger");
     const navlinks = document.getElementById("navlinks");
-    burger.addEventListener("click", () => navlinks.classList.toggle("open"));
-    navlinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navlinks.classList.remove("open")));
+    const setMenu = (open) => {
+      navlinks.classList.toggle("open", open);
+      burger.classList.toggle("active", open);
+      document.body.classList.toggle("menu-open", open);
+    };
+    burger.addEventListener("click", () => setMenu(!navlinks.classList.contains("open")));
+    navlinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => setMenu(false)));
+    // referme le menu si on repasse en bureau
+    window.addEventListener("resize", () => { if (window.innerWidth > 760) setMenu(false); });
   }
 
   function buildFooter() {
