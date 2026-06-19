@@ -239,12 +239,23 @@
     const imgs = document.querySelectorAll(".g-img, .visual.render img, .product-shot img");
     if (!imgs.length) return;
     const box = document.createElement("div"); box.id = "lightbox";
-    box.innerHTML = '<button class="lb-close" aria-label="Fermer">✕</button><img alt="">';
+    box.innerHTML = '<button class="lb-close" aria-label="Fermer">✕</button><img alt=""><button class="lb-save" aria-label="Enregistrer">⬇ Enregistrer</button>';
     document.body.appendChild(box);
     const big = box.querySelector("img");
     const open = (src, alt) => { big.src = src; big.alt = alt || ""; box.classList.add("show"); document.body.classList.add("menu-open"); };
     const close = () => { box.classList.remove("show"); document.body.classList.remove("menu-open"); };
+    const save = async () => {
+      try {
+        const resp = await fetch(big.src); const blob = await resp.blob();
+        const ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+        const name = (big.alt || "oryxia").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "." + ext;
+        const file = new File([blob], name, { type: blob.type || "image/jpeg" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: "ORYXIA Design" }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+        const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.download = name; a.href = url; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+      } catch (e) { window.open(big.src, "_blank"); }
+    };
     imgs.forEach(im => { im.style.cursor = "zoom-in"; im.addEventListener("click", () => open(im.currentSrc || im.src, im.alt)); });
+    box.querySelector(".lb-save").addEventListener("click", (e) => { e.stopPropagation(); save(); });
     box.addEventListener("click", (e) => { if (e.target === box || e.target.classList.contains("lb-close")) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
   }
