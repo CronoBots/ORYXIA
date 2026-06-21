@@ -28,6 +28,54 @@
     return items ? `<div class="socials">${items}</div>` : "";
   }
 
+  /* ---------- Jeu d'icônes SVG (trait fin doré) ---------- */
+  const ICO = {
+    target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
+    users: '<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.8a3 3 0 0 1 0 5.7"/><path d="M17.5 19a5.5 5.5 0 0 0-3-4.9"/>',
+    leaf: '<path d="M5 19C5 11 11 6 19 6c0 8-5 14-13 13Z"/><path d="M5 19c3-4 6-6 10-7"/>',
+    bulb: '<path d="M9.5 18h5"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3Z"/>',
+    timer: '<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V9.5"/><path d="M9.5 2.5h5"/><path d="M18.8 6.2l1.4-1.4"/>',
+    sparkle: '<path d="M12 3l1.8 5.6L19 10.4l-5.2 1.8L12 18l-1.8-5.8L5 10.4l5.2-1.8Z"/>',
+    wood: '<rect x="3" y="7" width="18" height="10" rx="5"/><circle cx="7.5" cy="12" r="1.3"/><circle cx="7.5" cy="12" r="2.7"/>',
+    gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M2.5 12h3M18.5 12h3M4.4 19.6l2.1-2.1M17.5 6.5l2.1-2.1"/>',
+    glass: '<path d="M6 5h12l-1.1 13.6a1.4 1.4 0 0 1-1.4 1.3H8.5a1.4 1.4 0 0 1-1.4-1.3Z"/><path d="M7 11h10"/>',
+    bag: '<path d="M5 8h14l-1 12H6Z"/><path d="M8.5 8a3.5 3.5 0 0 1 7 0"/>',
+    medal: '<path d="M8.5 3l3 5.2M15.5 3l-3 5.2"/><circle cx="12" cy="15" r="5.5"/><path d="M12 12.4l.9 1.9 2 .2-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.2Z"/>',
+    scissors: '<circle cx="6" cy="6.5" r="2.3"/><circle cx="6" cy="17.5" r="2.3"/><path d="M8 7.6L20 17.5M8 16.4L20 6.5"/>',
+    stone: '<path d="M4 15.5l3.5-7.5 5-1.5 6.5 4 .5 5-7.5 3.5-8-1Z"/><path d="M7.5 8l3 5.5 8.5-1"/>',
+    gift: '<rect x="4" y="9" width="16" height="11" rx="1"/><path d="M3 9h18M12 9v11"/><path d="M12 9c-1.2-3-5-2.8-5-.6 0 1.2 3 .6 5 .6Zm0 0c1.2-3 5-2.8 5-.6 0 1.2-3 .6-5 .6Z"/>',
+    building: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/><path d="M9.5 21v-2.5h5V21"/>',
+    bolt: '<path d="M13 2.5L5.5 13H11l-1 8.5L18.5 11H13Z"/>',
+    palette: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 1.9-1 1.4-2-.6-1.3.4-2.6 1.6-2.6H17a4 4 0 0 0 4-4c0-4.9-4-7.5-9-9.4Z"/><circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="11.5" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="9.5" r="1" fill="currentColor" stroke="none"/>',
+    box: '<path d="M3 8l9-4 9 4-9 4Z"/><path d="M3 8v8.2l9 4 9-4V8"/><path d="M12 12v8.2"/>',
+    statue: '<path d="M7 8.5a5 5 0 0 1 10 0v4.5a5 5 0 0 1-10 0Z"/><path d="M7.2 13c-.2 3-.2 7-.2 8h10c0-1 0-5-.2-8"/><path d="M9.5 9.2h1.2M13.3 9.2h1.2M10 12.2h4"/>',
+    contrast: '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor" stroke="none"/>',
+    search: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.6-4.6"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7.5l8 5.5 8-5.5"/>',
+    phone: '<path d="M5 4h3l1.6 4-2.1 1.5a11 11 0 0 0 5 5L13 12.4l4 1.6V18a2 2 0 0 1-2 2A14 14 0 0 1 3 6a2 2 0 0 1 2-2Z"/>',
+    pin: '<path d="M12 21s7-5.6 7-11a7 7 0 0 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.6 2"/>',
+    chat: '<path d="M20 4H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3v4l4.2-4H20a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1Z"/><path d="M8 9.5h8M8 12.5h5"/>',
+    globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.5 2.6 14.5 0 17M12 3.5c-2.6 2.5-2.6 14.5 0 17"/>',
+    upload: '<path d="M12 16V5M7.5 9.5L12 5l4.5 4.5"/><path d="M5 19h14"/>'
+  };
+  const EMOJI2ICO = {
+    "🎯": "target", "🤝": "users", "🌱": "leaf", "💡": "bulb", "⏱": "timer",
+    "✨": "sparkle", "✦": "sparkle", "🪵": "wood", "⚙": "gear", "🥃": "glass",
+    "👜": "bag", "🏅": "medal", "✂": "scissors", "🪨": "stone", "🎁": "gift",
+    "🏢": "building", "⚡": "bolt", "🎨": "palette", "📦": "box", "🗿": "statue",
+    "🌓": "contrast", "🔍": "search", "✉": "mail", "☎": "phone", "📍": "pin",
+    "🕒": "clock", "💬": "chat", "◐": "globe", "⬆": "upload"
+  };
+  function renderIcons() {
+    const sel = ".card .ico, .info-card .ic, .testi .ic-badge, .dropzone .dz-ico";
+    document.querySelectorAll(sel).forEach(el => {
+      const key = el.textContent.replace(/[\uFE0F\u200D]/g, "").trim();
+      const name = EMOJI2ICO[key];
+      if (name) { el.classList.add("ico-svg"); el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICO[name]}</svg>`; }
+    });
+  }
+
   /* ---------- En-tête partagé ---------- */
   const NAV = [
     { label: "Accueil", href: "index.html" },
@@ -400,6 +448,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     buildHeader();
     buildFooter();
+    renderIcons();
     reveals();
     faq();
     galleryFilters();

@@ -381,6 +381,15 @@ h1,h2,h3,h4 { font-family: var(--font-titre); font-weight: 600; line-height: 1.1
 }
 .dropzone:hover, .dropzone.drag { border-color: var(--or); background: rgba(230,180,34,.05); color: var(--or-clair); }
 .dropzone .dz-ico { font-size: 2rem; margin-bottom: 10px; }
+
+/* Icônes SVG (trait fin doré) */
+.card .ico { color: var(--or); }
+.card .ico.ico-svg svg { width: 28px; height: 28px; }
+.info-card .ic.ico-svg svg { width: 22px; height: 22px; }
+.testi .ic-badge.ico-svg svg { width: 24px; height: 24px; }
+.dropzone .dz-ico.ico-svg { color: var(--or); }
+.dropzone .dz-ico.ico-svg svg { width: 30px; height: 30px; }
+.ico-svg svg { display: block; }
 .chips { display:flex; gap: 8px; flex-wrap: wrap; }
 .chip { padding: 8px 14px; border-radius: 50px; border:1px solid var(--gris); background:transparent; color: var(--gris-clair); cursor:pointer; font-size:.82rem; transition: var(--transition); }
 .chip.active, .chip:hover { border-color: var(--or); color: var(--or-clair); background: rgba(230,180,34,.08); }
