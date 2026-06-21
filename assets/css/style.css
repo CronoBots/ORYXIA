@@ -998,3 +998,16 @@ input, textarea, select, [contenteditable="true"] {
   .step { grid-template-columns: 54px 1fr; gap: 18px; }
   .step .num { width: 54px; height: 54px; font-size: 1.35rem; }
 }
+
+/* =========================================================
+   BANDEAU CONFIANCE — séparateurs propres + stack mobile
+   ========================================================= */
+.trust { gap: 14px 26px; }
+.trust span:not(:first-child)::before {
+  content: "·"; margin-right: 26px; color: var(--or); opacity: .55;
+}
+@media (max-width: 600px) {
+  .trust { flex-direction: column; gap: 16px; }
+  .trust span:not(:first-child)::before { display: none; }
+  .trust span { font-size: 1rem; letter-spacing: 3px; }
+}
