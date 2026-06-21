@@ -934,3 +934,8 @@ html { scroll-padding-top: 96px; }
   .hero-stats .stat { padding: 0 14px; }
   .hero-stats .stat + .stat::before { display: none; }
 }
+
+/* CTA de section (services) : pleine largeur et centré sur mobile */
+@media (max-width: 600px) {
+  .svc-cta { display: flex; width: 100%; justify-content: center; }
+}
