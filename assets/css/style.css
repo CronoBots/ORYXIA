@@ -1044,3 +1044,7 @@ input, textarea, select, [contenteditable="true"] {
   #lightbox .lb-save { bottom: 18px; }
   #lightbox .lb-cap { font-size: .92rem; }
 }
+
+/* Étapes en grille (accueil) : compteur 01→04 + pas de rail timeline */
+.proj-steps { counter-reset: step; }
+.proj-steps::before, .proj-steps::after { display: none; }
