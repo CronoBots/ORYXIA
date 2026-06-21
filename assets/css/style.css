@@ -939,3 +939,18 @@ html { scroll-padding-top: 96px; }
 @media (max-width: 600px) {
   .svc-cta { display: flex; width: 100%; justify-content: center; }
 }
+
+/* =========================================================
+   RENDU APPLICATION — pas de sélection ni de zoom double-tap
+   ========================================================= */
+body {
+  -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* On garde la saisie/sélection possible dans les champs de formulaire */
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
+  -webkit-touch-callout: default;
+}
