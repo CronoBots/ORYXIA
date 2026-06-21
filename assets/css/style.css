@@ -954,3 +954,47 @@ input, textarea, select, [contenteditable="true"] {
   -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; user-select: text;
   -webkit-touch-callout: default;
 }
+
+/* =========================================================
+   PROCÉDÉ — timeline animée (rail doré + médaillons numérotés)
+   ========================================================= */
+.steps { position: relative; gap: 0; }
+/* Rail (piste + remplissage qui progresse au scroll) */
+.steps::before, .steps::after {
+  content: ""; position: absolute; left: 31px; top: 38px; bottom: 46px; width: 2px; border-radius: 2px;
+}
+.steps::before { background: rgba(230,180,34,.16); }
+.steps::after {
+  background: var(--or-gradient); transform-origin: top center;
+  transform: scaleY(var(--steps-progress, 0)); transition: transform .15s linear;
+  box-shadow: 0 0 12px rgba(230,180,34,.45);
+}
+.step {
+  grid-template-columns: 64px 1fr; gap: 26px; align-items: flex-start;
+  padding: 12px 0 30px; border: 0; background: none; transform: none;
+}
+.step:last-child { padding-bottom: 0; }
+.step:hover { transform: none; }
+.step .num {
+  position: relative; z-index: 1; width: 64px; height: 64px;
+  background: var(--noir-2); border: 1px solid var(--or); color: var(--or);
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.step.in .num {
+  background: var(--or-gradient); color: #1a1206; border-color: transparent; font-weight: 700;
+  box-shadow: 0 0 0 4px rgba(230,180,34,.12), 0 12px 26px -8px rgba(230,180,34,.6);
+}
+/* La carte de texte à droite */
+.step > div:last-child {
+  background: var(--noir-2); border: 1px solid var(--gris); border-radius: var(--radius);
+  padding: 22px 24px; transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.step:hover > div:last-child {
+  border-color: rgba(230,180,34,.4); transform: translateX(6px);
+  box-shadow: 0 24px 50px -28px rgba(0,0,0,.85);
+}
+@media (max-width: 560px) {
+  .steps::before, .steps::after { left: 26px; }
+  .step { grid-template-columns: 54px 1fr; gap: 18px; }
+  .step .num { width: 54px; height: 54px; font-size: 1.35rem; }
+}

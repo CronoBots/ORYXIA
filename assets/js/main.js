@@ -445,6 +445,21 @@
     window.addEventListener("resize", () => { cancelAnimationFrame(raf); resize(); parts = make(); tick(); });
   }
 
+  /* ---------- Timeline procédé : remplissage du rail au scroll ---------- */
+  function stepsTimeline() {
+    const steps = document.querySelector(".steps");
+    if (!steps) return;
+    const update = () => {
+      const r = steps.getBoundingClientRect();
+      const fillY = window.innerHeight * 0.5;
+      const p = Math.max(0, Math.min(1, (fillY - r.top) / Math.max(1, r.height)));
+      steps.style.setProperty("--steps-progress", p.toFixed(3));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     buildHeader();
     buildFooter();
@@ -465,5 +480,6 @@
     cursorGlow();
     particles();
     whatsapp();
+    stepsTimeline();
   });
 })();
