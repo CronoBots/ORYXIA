@@ -313,11 +313,49 @@
     const imgs = document.querySelectorAll(".g-img, .visual.render img, .product-shot img");
     if (!imgs.length) return;
     const box = document.createElement("div"); box.id = "lightbox";
-    box.innerHTML = '<button class="lb-close" aria-label="Fermer">✕</button><img alt=""><button class="lb-save" aria-label="Enregistrer">⬇ Enregistrer</button>';
+    box.innerHTML =
+      '<button class="lb-close" aria-label="Fermer">✕</button>' +
+      '<button class="lb-nav lb-prev" aria-label="Image précédente">‹</button>' +
+      '<button class="lb-nav lb-next" aria-label="Image suivante">›</button>' +
+      '<figure class="lb-figure"><img alt=""><figcaption class="lb-cap"></figcaption></figure>' +
+      '<div class="lb-count"></div>' +
+      '<button class="lb-save" aria-label="Enregistrer">Enregistrer</button>';
     document.body.appendChild(box);
     const big = box.querySelector("img");
-    const open = (src, alt) => { big.src = src; big.alt = alt || ""; box.classList.add("show"); document.body.classList.add("menu-open"); };
+    const cap = box.querySelector(".lb-cap");
+    const count = box.querySelector(".lb-count");
+    const prevBtn = box.querySelector(".lb-prev");
+    const nextBtn = box.querySelector(".lb-next");
+
+    let list = [];      // images visibles au moment de l'ouverture
+    let current = 0;
+
+    const show = (i) => {
+      if (!list.length) return;
+      current = (i + list.length) % list.length;
+      const im = list[current];
+      const src = im.currentSrc || im.src;
+      big.style.opacity = "0";
+      const pre = new Image();
+      pre.onload = () => { big.src = src; big.alt = im.alt || ""; big.style.opacity = "1"; };
+      pre.src = src;
+      cap.textContent = im.alt || "";
+      count.textContent = (current + 1) + " / " + list.length;
+      const solo = list.length < 2;
+      prevBtn.style.display = solo ? "none" : "";
+      nextBtn.style.display = solo ? "none" : "";
+      count.style.display = solo ? "none" : "";
+    };
+    const open = (im) => {
+      list = [...imgs].filter(x => x.offsetParent !== null); // respecte les filtres
+      const idx = list.indexOf(im);
+      show(idx < 0 ? 0 : idx);
+      box.classList.add("show"); document.body.classList.add("menu-open");
+    };
     const close = () => { box.classList.remove("show"); document.body.classList.remove("menu-open"); };
+    const next = () => show(current + 1);
+    const prev = () => show(current - 1);
+
     const save = async () => {
       try {
         const resp = await fetch(big.src); const blob = await resp.blob();
@@ -328,10 +366,25 @@
         const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.download = name; a.href = url; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1500);
       } catch (e) { window.open(big.src, "_blank"); }
     };
-    imgs.forEach(im => { im.style.cursor = "zoom-in"; im.addEventListener("click", () => open(im.currentSrc || im.src, im.alt)); });
+
+    imgs.forEach(im => { im.style.cursor = "zoom-in"; im.addEventListener("click", () => open(im)); });
     box.querySelector(".lb-save").addEventListener("click", (e) => { e.stopPropagation(); save(); });
-    box.addEventListener("click", (e) => { if (e.target === box || e.target.classList.contains("lb-close")) close(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    prevBtn.addEventListener("click", (e) => { e.stopPropagation(); prev(); });
+    nextBtn.addEventListener("click", (e) => { e.stopPropagation(); next(); });
+    box.addEventListener("click", (e) => { if (e.target === box || e.target.classList.contains("lb-close") || e.target.classList.contains("lb-figure")) close(); });
+    document.addEventListener("keydown", (e) => {
+      if (!box.classList.contains("show")) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "ArrowLeft") prev();
+    });
+    // Balayage tactile (mobile)
+    let sx = 0, sy = 0;
+    box.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    box.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { dx < 0 ? next() : prev(); }
+    }, { passive: true });
   }
 
   /* Compteurs animés */

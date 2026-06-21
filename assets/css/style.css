@@ -1011,3 +1011,36 @@ input, textarea, select, [contenteditable="true"] {
   .trust span:not(:first-child)::before { display: none; }
   .trust span { font-size: 1rem; letter-spacing: 3px; }
 }
+
+/* =========================================================
+   GALERIE IMMERSIVE — navigation lightbox
+   ========================================================= */
+#lightbox img { transition: transform .3s, opacity .25s ease; }
+#lightbox .lb-figure {
+  margin: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; cursor: zoom-out;
+}
+#lightbox .lb-cap {
+  font-family: var(--font-titre); font-size: 1.02rem; letter-spacing: .5px; color: var(--blanc);
+  text-align: center; max-width: 80vw; opacity: .92;
+}
+#lightbox .lb-count {
+  position: absolute; top: 26px; left: 50%; transform: translateX(-50%);
+  font-size: .8rem; letter-spacing: 3px; color: var(--gris-clair);
+}
+#lightbox .lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 54px; height: 54px; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.06); border: 1px solid var(--gris); color: var(--blanc);
+  font-size: 2rem; line-height: 1; display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+#lightbox .lb-prev { left: 3vw; }
+#lightbox .lb-next { right: 3vw; }
+#lightbox .lb-nav:hover { background: var(--or); color: #1a1206; border-color: var(--or); transform: translateY(-50%) scale(1.08); }
+@media (max-width: 600px) {
+  #lightbox .lb-nav { width: 44px; height: 44px; font-size: 1.6rem; }
+  #lightbox .lb-prev { left: 8px; }
+  #lightbox .lb-next { right: 8px; }
+  #lightbox .lb-save { bottom: 18px; }
+  #lightbox .lb-cap { font-size: .92rem; }
+}
