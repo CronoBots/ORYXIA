@@ -124,7 +124,7 @@
               <h4>Contact</h4>
               <p>✉ contact@oryxia.be</p>
               <p>☎ <a href="tel:+32495369670" style="color:inherit">0495 36 96 70</a></p>
-              <p>📍 Rue des Chapelles 31, 5080 Rhisnes (Belgique)</p>
+              <p>📍 <a href="https://www.google.com/maps/search/?api=1&query=Rue%20des%20Chapelles%2031%2C%205080%20Rhisnes" target="_blank" rel="noopener" style="color:inherit">Rue des Chapelles 31, 5080 Rhisnes (Belgique)</a></p>
               <p style="margin-top:-4px;font-size:.85rem">Expédition Belgique &amp; France</p>
               <a href="${BASE}contact.html" class="btn btn-ghost btn-sm" style="margin-top:10px">Nous écrire</a>
             </div>

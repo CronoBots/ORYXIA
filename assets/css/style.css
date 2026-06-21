@@ -728,3 +728,10 @@ textarea:focus-visible, select:focus-visible, .chip:focus-visible,
   .footer-grid .btn { margin-left: auto; margin-right: auto; }
   .footer-bottom { flex-direction: column; text-align: center; gap: 10px; }
 }
+
+/* =========================================================
+   CARTE GOOGLE MAPS
+   ========================================================= */
+.map-wrap { border-radius: 18px; overflow: hidden; border: 1px solid var(--gris); box-shadow: var(--shadow); line-height: 0; }
+.map-wrap iframe { width: 100%; height: 430px; border: 0; display: block; filter: grayscale(.25) contrast(1.03); }
+@media (max-width: 600px) { .map-wrap iframe { height: 340px; } }
