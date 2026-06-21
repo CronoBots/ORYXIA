@@ -48,20 +48,20 @@
         <div class="card">
           <h2 class="h-md" style="margin-bottom:8px">Votre demande</h2>
           <p class="form-note" style="margin-bottom:24px">Les champs marqués <span class="text-or">*</span> sont obligatoires.</p>
-          <div class="form-success" id="ok">✓ Merci ! Votre demande a bien été prise en compte (démonstration). Nous vous répondrons sous 24h.</div>
-          <form class="form" data-demo>
+          <div class="form-success" id="ok">✓ Merci ! Votre logiciel de messagerie s'ouvre avec votre demande pré-remplie — il ne reste qu'à cliquer sur « Envoyer ». Nous vous répondons sous 24h.</div>
+          <form class="form" id="devis-form">
             <div class="row">
-              <div class="field"><label>Prénom <span class="req">*</span></label><input type="text" required placeholder="Jean"></div>
-              <div class="field"><label>Nom <span class="req">*</span></label><input type="text" required placeholder="Dupont"></div>
+              <div class="field"><label>Prénom <span class="req">*</span></label><input type="text" name="prenom" required placeholder="Jean"></div>
+              <div class="field"><label>Nom <span class="req">*</span></label><input type="text" name="nom" required placeholder="Dupont"></div>
             </div>
             <div class="row">
-              <div class="field"><label>Email <span class="req">*</span></label><input type="email" required placeholder="jean.dupont@email.fr"></div>
-              <div class="field"><label>Téléphone</label><input type="tel" placeholder="Votre numéro"></div>
+              <div class="field"><label>Email <span class="req">*</span></label><input type="email" name="email" required placeholder="votre@email.be"></div>
+              <div class="field"><label>Téléphone</label><input type="tel" name="telephone" placeholder="Votre numéro"></div>
             </div>
             <div class="row">
               <div class="field">
                 <label>Type de projet</label>
-                <select>
+                <select name="type">
                   <option>Cadeau personnalisé</option>
                   <option>Médaille / trophée</option>
                   <option>Objet professionnel / entreprise</option>
@@ -72,7 +72,7 @@
               </div>
               <div class="field">
                 <label>Matériau souhaité</label>
-                <select>
+                <select name="materiau">
                   <option>Je ne sais pas encore</option>
                   <option>Bois</option><option>Métal</option><option>Verre / cristal</option>
                   <option>Cuir</option><option>Plexiglas</option><option>Ardoise / pierre</option>
@@ -80,13 +80,13 @@
               </div>
             </div>
             <div class="row">
-              <div class="field"><label>Quantité</label><input type="number" min="1" value="1"></div>
-              <div class="field"><label>Délai souhaité</label><select><option>Standard</option><option>Express (48h)</option><option>Flexible</option></select></div>
+              <div class="field"><label>Quantité</label><input type="number" name="quantite" min="1" value="1"></div>
+              <div class="field"><label>Délai souhaité</label><select name="delai"><option>Standard</option><option>Express (48h)</option><option>Flexible</option></select></div>
             </div>
-            <div class="field"><label>Décrivez votre projet <span class="req">*</span></label><textarea required placeholder="Objet, dimensions, texte/visuel à graver, occasion, budget indicatif…"></textarea></div>
+            <div class="field"><label>Décrivez votre projet <span class="req">*</span></label><textarea name="message" required placeholder="Objet, dimensions, texte/visuel à graver, occasion, budget indicatif…"></textarea></div>
             <label style="display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--gris-clair)"><input type="checkbox" required style="accent-color:var(--or);margin-top:4px"> J'accepte d'être recontacté concernant ma demande.</label>
             <button type="submit" class="btn btn-or btn-lg">Envoyer ma demande</button>
-            <p class="form-note">💡 Vous pouvez aussi préparer votre projet avec notre <a href="simulateur.html" class="text-or">simulateur de gravure</a>.</p>
+            <p class="form-note">💡 Vous pouvez aussi nous joindre directement par <a href="https://wa.me/32495369670" target="_blank" rel="noopener" class="text-or">WhatsApp</a>, <a href="mailto:contact@oryxia.be" class="text-or">email</a> ou via le <a href="simulateur.html" class="text-or">simulateur</a>.</p>
           </form>
         </div>
       </div>
@@ -130,11 +130,30 @@
   <div id="site-footer"></div>
   <script src="assets/js/main.js" defer></script>
   <script>
-    // Lie le message de succès au formulaire
+    // Envoi du formulaire : compose un email pré-rempli vers ORYXIA Design
     document.addEventListener('DOMContentLoaded', () => {
-      const f = document.querySelector('form[data-demo]');
+      const f = document.getElementById('devis-form');
       const ok = document.getElementById('ok');
-      if (f && ok) f.prepend(ok);
+      if (!f) return;
+      if (ok) f.prepend(ok);
+      f.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const v = (n) => (f.elements[n] ? f.elements[n].value.trim() : '');
+        const sujet = `Demande de devis — ${v('prenom')} ${v('nom')}`;
+        const corps =
+          `Prénom : ${v('prenom')}\n` +
+          `Nom : ${v('nom')}\n` +
+          `Email : ${v('email')}\n` +
+          `Téléphone : ${v('telephone')}\n` +
+          `Type de projet : ${v('type')}\n` +
+          `Matériau : ${v('materiau')}\n` +
+          `Quantité : ${v('quantite')}\n` +
+          `Délai : ${v('delai')}\n\n` +
+          `Projet :\n${v('message')}\n`;
+        const mailto = `mailto:contact@oryxia.be?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+        if (ok) { ok.classList.add('show'); ok.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        window.location.href = mailto;
+      });
     });
   </script>
 </body>
