@@ -117,8 +117,8 @@
             <div>
               <h4>Contact</h4>
               <p>✉ contact@oryxia.be</p>
-              <p>☎ 06 00 00 00 00</p>
-              <p>📍 France — Expédition partout</p>
+              <p>☎ +32 4XX XX XX XX</p>
+              <p>📍 Liège, Belgique — Expédition Belgique &amp; France</p>
               <a href="${BASE}contact.html" class="btn btn-ghost btn-sm" style="margin-top:10px">Nous écrire</a>
             </div>
           </div>
