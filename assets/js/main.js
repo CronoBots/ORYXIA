@@ -49,18 +49,23 @@
     }).join("");
 
     host.innerHTML = `
+      <a href="#main" class="skip-link">Aller au contenu</a>
       <header class="site-header" id="hdr">
         <div class="container nav">
           <a href="${BASE}index.html" class="brand">
-            <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design — gravure laser">
+            <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design — gravure laser" width="120" height="50">
           </a>
-          <nav class="nav-links" id="navlinks">
+          <nav class="nav-links" id="navlinks" aria-label="Navigation principale">
             ${links}
             <a href="${BASE}contact.html" class="btn btn-or btn-sm nav-cta">Demander un devis</a>
           </nav>
-          <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+          <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
       </header>`;
+
+    // cible du lien d'évitement
+    const firstSection = document.querySelector("section");
+    if (firstSection && !firstSection.id) { firstSection.id = "main"; firstSection.setAttribute("tabindex", "-1"); }
 
     const hdr = document.getElementById("hdr");
     const onScroll = () => hdr.classList.toggle("scrolled", window.scrollY > 30);
@@ -72,6 +77,7 @@
     const setMenu = (open) => {
       navlinks.classList.toggle("open", open);
       burger.classList.toggle("active", open);
+      burger.setAttribute("aria-expanded", open ? "true" : "false");
       document.body.classList.toggle("menu-open", open);
     };
     burger.addEventListener("click", () => setMenu(!navlinks.classList.contains("open")));
@@ -117,8 +123,9 @@
             <div>
               <h4>Contact</h4>
               <p>✉ contact@oryxia.be</p>
-              <p>☎ +32 4XX XX XX XX</p>
-              <p>📍 Liège, Belgique — Expédition Belgique &amp; France</p>
+              <p>☎ <a href="tel:+32495369670" style="color:inherit">0495 36 96 70</a></p>
+              <p>📍 Rue des Chapelles 31, 5080 Rhisnes (Belgique)</p>
+              <p style="margin-top:-4px;font-size:.85rem">Expédition Belgique &amp; France</p>
               <a href="${BASE}contact.html" class="btn btn-ghost btn-sm" style="margin-top:10px">Nous écrire</a>
             </div>
           </div>
@@ -219,8 +226,11 @@
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
       bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
-      // masque le bouton près du pied de page pour éviter le chevauchement
-      const nearBottom = window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 170;
+      // masque le bouton dès que le pied de page apparaît (anti-chevauchement)
+      const footer = document.querySelector(".site-footer");
+      const nearBottom = footer
+        ? footer.getBoundingClientRect().top < window.innerHeight - 40
+        : window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 200;
       top.classList.toggle("show", window.scrollY > 500 && !nearBottom);
     };
     window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
