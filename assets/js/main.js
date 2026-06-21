@@ -513,6 +513,24 @@
     window.addEventListener("resize", update);
   }
 
+  /* ---------- Blocage du zoom (pincer / double-tap) — iOS inclus ---------- */
+  function lockZoom() {
+    // Pincer (geste iOS Safari, qui ignore user-scalable=no)
+    ["gesturestart", "gesturechange", "gestureend"].forEach(ev =>
+      document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+    // Pincer à deux doigts (autres navigateurs)
+    document.addEventListener("touchmove", e => {
+      if (e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+    // Double-tap pour zoomer (sécurité en plus de touch-action: manipulation)
+    let lastTouch = 0;
+    document.addEventListener("touchend", e => {
+      const now = Date.now();
+      if (now - lastTouch <= 300) e.preventDefault();
+      lastTouch = now;
+    }, { passive: false });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     buildHeader();
     buildFooter();
@@ -534,5 +552,6 @@
     particles();
     whatsapp();
     stepsTimeline();
+    lockZoom();
   });
 })();
