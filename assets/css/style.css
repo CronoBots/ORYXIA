@@ -876,3 +876,61 @@ html { scroll-padding-top: 96px; }
   content: ""; position: absolute; top: 0; left: 0; width: 28px; height: 2px;
   background: var(--or-gradient); border-radius: 2px; opacity: .85;
 }
+
+/* =========================================================
+   HERO — version signature (rayons, socle, indicateur)
+   ========================================================= */
+
+/* Rayons de lumière dorés qui tournent lentement derrière le médaillon */
+.hero-visual::before {
+  content: ""; position: absolute; inset: -30% -30%; z-index: 0; pointer-events: none;
+  background: conic-gradient(from 0deg, transparent 0 8deg, rgba(230,180,34,.10) 9deg 11deg, transparent 12deg 30deg);
+  -webkit-mask: radial-gradient(circle, #000 0%, #000 38%, transparent 70%);
+          mask: radial-gradient(circle, #000 0%, #000 38%, transparent 70%);
+  animation: heroRays 38s linear infinite; opacity: .8;
+}
+@keyframes heroRays { to { transform: rotate(360deg); } }
+
+/* Socle lumineux + reflet doux sous le médaillon */
+.hero-visual::after {
+  content: ""; position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%);
+  width: 62%; height: 38px; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(230,180,34,.22), transparent 70%);
+  filter: blur(7px);
+}
+
+/* Stats : séparateurs dorés fins + chiffres plus présents */
+.hero-stats { gap: 0; align-items: stretch; }
+.hero-stats .stat { padding: 0 30px; position: relative; }
+.hero-stats .stat:first-child { padding-left: 0; }
+.hero-stats .stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 38px; background: linear-gradient(180deg, transparent, rgba(230,180,34,.45), transparent);
+}
+.hero-stats .stat .n { font-size: 2.35rem; line-height: 1; }
+
+/* Indicateur « défiler » en bas du hero */
+.hero-scroll {
+  position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: .68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gris-clair);
+  z-index: 2; opacity: .85; transition: var(--transition);
+}
+.hero-scroll:hover { color: var(--or-clair); opacity: 1; }
+.hero-scroll .mouse {
+  width: 22px; height: 36px; border: 1px solid rgba(230,180,34,.5); border-radius: 12px; position: relative;
+}
+.hero-scroll .mouse::before {
+  content: ""; position: absolute; left: 50%; top: 7px; transform: translateX(-50%);
+  width: 3px; height: 7px; border-radius: 2px; background: var(--or);
+  animation: heroWheel 1.8s ease-in-out infinite;
+}
+@keyframes heroWheel { 0%{opacity:0;transform:translate(-50%,0)} 30%{opacity:1} 60%{opacity:1;transform:translate(-50%,9px)} 100%{opacity:0;transform:translate(-50%,12px)} }
+@media (max-width: 760px) { .hero-scroll { display: none; } }
+
+/* Hero stats : pas de séparateurs verticaux quand ça passe en colonne */
+@media (max-width: 760px) {
+  .hero-stats { gap: 22px 28px; flex-wrap: wrap; justify-content: center; }
+  .hero-stats .stat { padding: 0 14px; }
+  .hero-stats .stat + .stat::before { display: none; }
+}
