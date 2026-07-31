@@ -230,7 +230,7 @@
     }
     octx.putImageData(out, 0, 0);
     // textes gravés
-    if (state.showText) { drawCurvedText(octx, cx, cy, R - 14, state.text.toUpperCase(), m, false); if (state.subtext) drawCurvedText(octx, cx, cy, R - 14, state.subtext.toUpperCase(), m, true); }
+    if (state.showText) { const txtR = R * 0.76; drawCurvedText(octx, cx, cy, txtR, state.text.toUpperCase(), m, false); if (state.subtext) drawCurvedText(octx, cx, cy, txtR, state.subtext.toUpperCase(), m, true); }
   }
 
   /* ---------- rendu rectangulaire (plaque / carré / médaillon) ---------- */
