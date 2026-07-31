@@ -57,7 +57,9 @@
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.6 2"/>',
     chat: '<path d="M20 4H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3v4l4.2-4H20a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1Z"/><path d="M8 9.5h8M8 12.5h5"/>',
     globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.5 2.6 14.5 0 17M12 3.5c-2.6 2.5-2.6 14.5 0 17"/>',
-    upload: '<path d="M12 16V5M7.5 9.5L12 5l4.5 4.5"/><path d="M5 19h14"/>'
+    upload: '<path d="M12 16V5M7.5 9.5L12 5l4.5 4.5"/><path d="M5 19h14"/>',
+    coin: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.3"/><path d="M12 8.7l.95 1.95 2.15.3-1.55 1.5.37 2.1L12 13.5l-1.92 1.05.37-2.1-1.55-1.5 2.15-.3Z"/>',
+    knife: '<path d="M20.5 3.5c-4.5.6-9.5 3.6-13 7.6l2.4 2.4c4-3.5 7.4-6.6 10.6-10Z"/><path d="M9.9 13.5l-4.5 4.5a1.7 1.7 0 0 0 2.4 2.4l4.5-4.5"/>'
   };
   const EMOJI2ICO = {
     "🎯": "target", "🤝": "users", "🌱": "leaf", "💡": "bulb", "⏱": "timer",
@@ -65,7 +67,8 @@
     "👜": "bag", "🏅": "medal", "✂": "scissors", "🪨": "stone", "🎁": "gift",
     "🏢": "building", "⚡": "bolt", "🎨": "palette", "📦": "box", "🗿": "statue",
     "🌓": "contrast", "🔍": "search", "✉": "mail", "☎": "phone", "📍": "pin",
-    "🕒": "clock", "💬": "chat", "◐": "globe", "⬆": "upload"
+    "🕒": "clock", "💬": "chat", "◐": "globe", "⬆": "upload",
+    "🪙": "coin", "🔪": "knife"
   };
   function renderIcons() {
     const sel = ".card .ico, .info-card .ic, .testi .ic-badge, .dropzone .dz-ico";
@@ -82,12 +85,9 @@
     {
       label: "Services", href: "services.html", children: [
         { label: "Vue d'ensemble", href: "services.html" },
-        { label: "Gravure sur bois", href: "services.html#bois" },
-        { label: "Gravure sur métal", href: "services.html#metal" },
-        { label: "Gravure sur verre", href: "services.html#verre" },
-        { label: "Cuir & maroquinerie", href: "services.html#cuir" },
         { label: "Médailles & trophées", href: "services.html#medailles" },
-        { label: "Découpe laser", href: "services.html#decoupe" },
+        { label: "Gravure relief métal", href: "services.html#metal" },
+        { label: "Simulateur de gravure", href: "simulateur.html" },
       ]
     },
     { label: "Réalisations", href: "realisations.html" },
@@ -178,11 +178,10 @@
             </div>
             <div>
               <h4>Services</h4>
-              <a href="${BASE}services.html#bois">Gravure sur bois</a>
-              <a href="${BASE}services.html#metal">Gravure sur métal</a>
-              <a href="${BASE}services.html#verre">Gravure sur verre</a>
               <a href="${BASE}services.html#medailles">Médailles & trophées</a>
-              <a href="${BASE}services.html#decoupe">Découpe laser</a>
+              <a href="${BASE}services.html#metal">Gravure relief métal</a>
+              <a href="${BASE}simulateur.html">Simulateur de gravure</a>
+              <a href="${BASE}realisations.html">Réalisations</a>
             </div>
             <div>
               <h4>Contact</h4>
