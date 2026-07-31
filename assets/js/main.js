@@ -81,26 +81,12 @@
 
   /* ---------- En-tête partagé ---------- */
   const NAV = [
-    { label: "Accueil", href: "index.html" },
-    {
-      label: "Services", href: "services.html", children: [
-        { label: "Vue d'ensemble", href: "services.html" },
-        { label: "Médailles & trophées", href: "services.html#medailles" },
-        { label: "Gravure relief métal", href: "services.html#metal" },
-        { label: "Simulateur de gravure", href: "simulateur.html" },
-      ]
-    },
-    { label: "Réalisations", href: "realisations.html" },
-    { label: "Simulateur", href: "simulateur.html" },
-    { label: "Tarifs", href: "tarifs.html" },
-    {
-      label: "À propos", href: "a-propos.html", children: [
-        { label: "L'atelier", href: "a-propos.html" },
-        { label: "Notre procédé", href: "processus.html" },
-        { label: "FAQ", href: "faq.html" },
-      ]
-    },
-    { label: "Contact", href: "contact.html" },
+    { label: "Savoir-faire", href: "#services" },
+    { label: "Simulateur", href: "#simulateur" },
+    { label: "Réalisations", href: "#realisations" },
+    { label: "Atelier", href: "#atelier" },
+    { label: "Tarifs", href: "#tarifs" },
+    { label: "Contact", href: "#contact" },
   ];
 
   function buildHeader() {
@@ -118,15 +104,15 @@
     }).join("");
 
     host.innerHTML = `
-      <a href="#main" class="skip-link">Aller au contenu</a>
+      <a href="#services" class="skip-link">Aller au contenu</a>
       <header class="site-header" id="hdr">
         <div class="container nav">
-          <a href="${BASE}index.html" class="brand">
-            <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design — gravure laser" width="120" height="50">
+          <a href="#accueil" class="brand">
+            <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design — gravure relief sur métal" width="120" height="50">
           </a>
           <nav class="nav-links" id="navlinks" aria-label="Navigation principale">
             ${links}
-            <a href="${BASE}contact.html" class="btn btn-or btn-sm nav-cta">Demander un devis</a>
+            <a href="#contact" class="btn btn-or btn-sm nav-cta">Demander un devis</a>
           </nav>
           <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
@@ -153,6 +139,30 @@
     navlinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => setMenu(false)));
     // referme le menu si on repasse en bureau
     window.addEventListener("resize", () => { if (window.innerWidth > 760) setMenu(false); });
+
+    // Scroll-spy : surligne la section active dans le menu (one-page)
+    const spyLinks = [...navlinks.querySelectorAll('a[href^="#"]')];
+    const spied = spyLinks
+      .map(a => ({ a, sec: document.getElementById(a.getAttribute("href").slice(1)) }))
+      .filter(x => x.sec);
+    if (spied.length && "IntersectionObserver" in window) {
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            spied.forEach(x => x.a.classList.toggle("active", x.sec === e.target));
+          }
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      spied.forEach(x => spy.observe(x.sec));
+    }
+
+    // Liens d'ancre : si la section n'est pas sur cette page, on rejoint l'accueil
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const id = a.getAttribute("href").slice(1);
+      if (id && !document.getElementById(id)) { e.preventDefault(); location.href = "index.html#" + id; }
+    });
   }
 
   function buildFooter() {
@@ -165,23 +175,23 @@
           <div class="footer-grid">
             <div class="footer-brand">
               <img src="${BASE}assets/img/logo.jpeg" alt="ORYXIA Design">
-              <p>Atelier de gravure laser de précision. Nous transformons vos idées en pièces uniques, sur tous supports, avec une finition d'exception.</p>
+              <p>Atelier de gravure relief sur métal. Médailles, pièces et médaillons en laiton, gravés en profondeur avec une finition d'exception.</p>
               ${socialsHTML()}
             </div>
             <div>
               <h4>Navigation</h4>
-              <a href="${BASE}index.html">Accueil</a>
-              <a href="${BASE}services.html">Services</a>
-              <a href="${BASE}realisations.html">Réalisations</a>
-              <a href="${BASE}simulateur.html">Simulateur</a>
-              <a href="${BASE}tarifs.html">Tarifs</a>
+              <a href="#accueil">Accueil</a>
+              <a href="#services">Savoir-faire</a>
+              <a href="#realisations">Réalisations</a>
+              <a href="#simulateur">Simulateur</a>
+              <a href="#tarifs">Tarifs</a>
             </div>
             <div>
-              <h4>Services</h4>
-              <a href="${BASE}services.html#medailles">Médailles & trophées</a>
-              <a href="${BASE}services.html#metal">Gravure relief métal</a>
-              <a href="${BASE}simulateur.html">Simulateur de gravure</a>
-              <a href="${BASE}realisations.html">Réalisations</a>
+              <h4>Explorer</h4>
+              <a href="#atelier">L'atelier</a>
+              <a href="#procede">Notre procédé</a>
+              <a href="#faq">FAQ</a>
+              <a href="#contact">Contact</a>
             </div>
             <div>
               <h4>Contact</h4>
