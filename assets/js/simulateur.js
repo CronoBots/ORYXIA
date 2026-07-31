@@ -33,7 +33,7 @@
     argent: { kind: "metal", shadow: [74, 78, 86], mid: [176, 180, 190], high: [255, 255, 255], patina: [60, 62, 70], spec: [255, 255, 255], reflect: 1.0 },
     bronze: { kind: "metal", shadow: [44, 26, 12], mid: [142, 92, 48], high: [232, 180, 126], patina: [34, 20, 10], spec: [255, 228, 190], reflect: 0.85 },
     noir:   { kind: "anodized", shadow: [14, 14, 17], mid: [26, 26, 31], high: [60, 60, 70], reveal: [200, 202, 210], spec: [150, 150, 160], reflect: 0.30 },
-    bois:   { kind: "wood", shadow: [70, 44, 22], mid: [150, 100, 58], high: [206, 160, 110], burn: [46, 26, 12], spec: [120, 90, 60], reflect: 0.18 },
+    cuivre: { kind: "metal", shadow: [72, 34, 18], mid: [184, 96, 52], high: [252, 186, 130], patina: [38, 60, 44], spec: [255, 214, 170], reflect: 0.92 },
   };
 
   /* ---------- géométrie & grain (cache par taille) ---------- */
