@@ -429,8 +429,8 @@
     tctx.restore();
   }
   function drawCurvedText(tctx, cx, cy, radius, text, m, bottom) {
-    tctx.save(); tctx.translate(cx, cy); tctx.font = "700 25px Cinzel, serif"; tctx.textAlign = "center"; tctx.textBaseline = "middle";
-    const chars = text.split(""); const arc = Math.min(Math.PI * 0.92, chars.length * 0.13); const step = arc / Math.max(chars.length, 1);
+    tctx.save(); tctx.translate(cx, cy); tctx.font = "700 20px Cinzel, serif"; tctx.textAlign = "center"; tctx.textBaseline = "middle";
+    const chars = text.split(""); const arc = Math.min(Math.PI * 0.7, chars.length * 0.1); const step = arc / Math.max(chars.length, 1);
     const start = bottom ? Math.PI / 2 + arc / 2 : -Math.PI / 2 - arc / 2;
     chars.forEach((ch, i) => {
       const an = bottom ? start - step * i : start + step * i;
