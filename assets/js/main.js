@@ -122,7 +122,9 @@
     if (firstSection && !firstSection.id) { firstSection.id = "main"; firstSection.setAttribute("tabindex", "-1"); }
 
     const hdr = document.getElementById("hdr");
-    const onScroll = () => hdr.classList.toggle("scrolled", window.scrollY > 30);
+    const hasHero = !!document.querySelector(".hero");
+    // Pages sans grand hero (simulateur, mentions…) : en-tête compact d'emblée
+    const onScroll = () => hdr.classList.toggle("scrolled", hasHero ? window.scrollY > 30 : true);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
