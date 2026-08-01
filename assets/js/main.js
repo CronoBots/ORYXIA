@@ -180,27 +180,12 @@
               ${socialsHTML()}
             </div>
             <div>
-              <h4>Navigation</h4>
-              <a href="#accueil">Accueil</a>
-              <a href="#services">Savoir-faire</a>
-              <a href="#realisations">Réalisations</a>
-              <a href="simulateur.html">Simulateur</a>
-              <a href="#tarifs">Tarifs</a>
-            </div>
-            <div>
-              <h4>Explorer</h4>
-              <a href="#atelier">L'atelier</a>
-              <a href="#procede">Notre procédé</a>
-              <a href="#faq">FAQ</a>
-              <a href="#contact">Contact</a>
-            </div>
-            <div>
               <h4>Contact</h4>
-              <p>✉ contact@oryxia.be</p>
-              <p>☎ <a href="tel:+32495369670" style="color:inherit">0495 36 96 70</a></p>
-              <p>📍 <a href="https://www.google.com/maps/search/?api=1&query=Rue%20des%20Chapelles%2031%2C%205080%20Rhisnes" target="_blank" rel="noopener" style="color:inherit">Rue des Chapelles 31, 5080 Rhisnes (Belgique)</a></p>
-              <p style="margin-top:-4px;font-size:.85rem">Expédition Belgique &amp; France</p>
-              <a href="${BASE}contact.html" class="btn btn-ghost btn-sm" style="margin-top:10px">Nous écrire</a>
+              <p><a href="mailto:contact@oryxia.be" style="color:inherit">contact@oryxia.be</a></p>
+              <p><a href="tel:+32495369670" style="color:inherit">0495 36 96 70</a></p>
+              <p><a href="https://www.google.com/maps/search/?api=1&query=Rue%20des%20Chapelles%2031%2C%205080%20Rhisnes" target="_blank" rel="noopener" style="color:inherit">Rue des Chapelles 31, 5080 Rhisnes (Belgique)</a></p>
+              <p style="font-size:.85rem">Expédition Belgique &amp; France</p>
+              <a href="#contact" class="btn btn-ghost btn-sm" style="margin-top:12px">Nous écrire</a>
             </div>
           </div>
           <div class="footer-bottom">

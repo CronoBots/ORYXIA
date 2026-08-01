@@ -415,7 +415,7 @@ h1,h2,h3,h4 { font-family: var(--font-titre); font-weight: 600; line-height: 1.1
 
 /* ---------- Pied de page ---------- */
 .site-footer { background: var(--noir-2); border-top: 1px solid var(--gris); padding: 70px 0 30px; margin-top: 0; }
-.footer-grid { display:grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
+.footer-grid { display:grid; grid-template-columns: 1.7fr 1fr; gap: 48px; margin-bottom: 46px; }
 .footer-grid h4 { font-family: var(--font-corps); font-size:.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--or); margin-bottom: 20px; }
 .footer-grid a, .footer-grid p { color: var(--gris-clair); font-size:.92rem; display:block; margin-bottom: 10px; }
 .footer-grid a:hover { color: var(--or-clair); }
@@ -594,8 +594,7 @@ h1,h2,h3,h4 { font-family: var(--font-titre); font-weight: 600; line-height: 1.1
 @keyframes glowPulse { 0%,100% { opacity:.7; transform: scale(1); } 50% { opacity:1; transform: scale(1.08); } }
 
 /* Soulignement animé des titres de section */
-.section-head .eyebrow::before { animation: lineGrow 2s ease-in-out infinite alternate; }
-@keyframes lineGrow { from { width: 18px; } to { width: 46px; } }
+/* (barre dorée sous l'eyebrow : plus d'animation — les titres ne bougent plus) */
 
 /* Liens de nav : glissement doux déjà géré ; ajout d'un éclat */
 .nav-cta { position: relative; overflow: hidden; }
