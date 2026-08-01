@@ -82,7 +82,7 @@
   /* ---------- En-tête partagé ---------- */
   const NAV = [
     { label: "Savoir-faire", href: "#services" },
-    { label: "Simulateur", href: "#simulateur" },
+    { label: "Simulateur", href: "simulateur.html" },
     { label: "Réalisations", href: "#realisations" },
     { label: "Atelier", href: "#atelier" },
     { label: "Tarifs", href: "#tarifs" },
@@ -182,7 +182,7 @@
               <a href="#accueil">Accueil</a>
               <a href="#services">Savoir-faire</a>
               <a href="#realisations">Réalisations</a>
-              <a href="#simulateur">Simulateur</a>
+              <a href="simulateur.html">Simulateur</a>
               <a href="#tarifs">Tarifs</a>
             </div>
             <div>
@@ -553,8 +553,6 @@
     gridReveals();
     lightbox();
     counters();
-    magnetic();
-    tiltCards();
     heroParallax();
     cursorGlow();
     particles();
