@@ -112,7 +112,6 @@
           </a>
           <nav class="nav-links" id="navlinks" aria-label="Navigation principale">
             ${links}
-            <a href="#contact" class="btn btn-or btn-sm nav-cta">Demander un devis</a>
           </nav>
           <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
