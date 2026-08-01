@@ -1108,19 +1108,21 @@ input, select, textarea, .text-input-mini { font-size: 16px; }
 /* =========================================================
    HERO CENTRÉ — pièce au milieu, texte au-dessus et en-dessous
    ========================================================= */
-.hero-center { padding: 116px 0 76px; }
+.hero-center { padding: 118px 0 88px; align-items: flex-start; }
 .hero-center .container { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.hero-center .eyebrow { margin-bottom: 16px; }
-.hero-center h1 { margin-bottom: 4px; }
-.hero-center .hero-visual { width: min(330px, 72vw); margin: 26px auto 20px; }
+.hero-center .eyebrow { margin-bottom: 18px; }
+.hero-center h1 { margin-bottom: 2px; line-height: 1.12; }
+.hero-center .hero-visual { width: min(384px, 76vw); margin: 30px auto 24px; }
 .hero-center .hero-logo { width: 100%; max-width: 100%; }
-.hero-center .lead { max-width: 60ch; margin: 0 auto 30px; font-size: 1.18rem; }
+.hero-center .lead { max-width: 58ch; margin: 0 auto 32px; font-size: 1.18rem; }
 .hero-center .hero-actions { justify-content: center; }
-.hero-center .hero-stats { justify-content: center; margin-top: 42px; }
+.hero-center .hero-stats { justify-content: center; margin-top: 44px; }
 @media (max-width: 760px) {
-  .hero-center { padding: 100px 0 60px; }
-  .hero-center .hero-visual { width: min(238px, 62vw); margin: 20px auto 16px; }
+  .hero-center { padding: 100px 0 64px; }
+  .hero-center .hero-visual { width: min(266px, 66vw); margin: 22px auto 18px; }
 }
+/* Sur écran peu haut, on masque l'indicateur pour qu'il ne chevauche pas les stats */
+@media (max-height: 860px) { .hero-center .hero-scroll { display: none; } }
 
 /* Halo centré derrière la pièce (hero centré) */
 .hero-center {
