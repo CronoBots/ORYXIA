@@ -42,27 +42,27 @@
 <body>
   <div id="site-header"></div>
 
-  <section class="page-hero" style="padding-bottom:40px">
+  <section class="page-hero" style="padding-bottom:26px">
     <div class="container">
       <p class="breadcrumb"><a href="index.html">Accueil</a> / Simulateur</p>
       <span class="eyebrow" style="justify-content:center">Outil exclusif</span>
       <h1 class="h-xl">Simulateur de <span class="metal-or">gravure en relief</span></h1>
-      <p class="lead">Importez une photo, un logo ou un dessin : notre moteur transforme votre image en <strong>gravure métallique en relief</strong>, avec profondeur, ombres et reflets — comme une vraie médaille en laiton. Ajustez, personnalisez, téléchargez.</p>
+      <p class="lead">Importez une image, réglez le métal et le relief, et voyez le rendu en direct. Vos images restent dans votre navigateur.</p>
     </div>
   </section>
 
-  <section class="section" style="padding-top:50px">
-    <div class="container">
+  <section class="section" style="padding-top:34px">
+    <div class="container container-wide">
       <div class="sim-wrap">
+
+        <!-- COLONNE GAUCHE : image, support, matière -->
         <aside class="sim-panel">
-          <h3>Personnalisez</h3>
-          <p class="hint">Vos images restent dans votre navigateur — rien n'est envoyé sur un serveur.</p>
           <div class="sim-group">
             <label>1 · Votre image</label>
             <div class="dropzone" id="sim-drop">
               <div class="dz-ico">⬆</div>
               <strong>Cliquez ou glissez une image</strong>
-              <div style="font-size:.8rem;margin-top:6px">PNG, JPG, SVG · logo, photo, dessin</div>
+              <div style="font-size:.78rem;margin-top:4px">PNG, JPG, SVG</div>
             </div>
             <input type="file" id="sim-file" accept="image/*" hidden>
           </div>
@@ -89,6 +89,23 @@
               <button class="chip" data-mat="cuivre">Cuivre</button>
             </div>
           </div>
+        </aside>
+
+        <!-- CENTRE : aperçu -->
+        <div class="sim-center">
+          <div class="sim-stage">
+            <canvas id="sim-canvas"></canvas>
+            <div class="sim-actions">
+              <button class="btn btn-or" id="sim-download">Enregistrer</button>
+              <button class="btn btn-ghost" id="sim-reset">Réinitialiser</button>
+              <a href="index.html#contact" class="btn btn-ghost">Commander</a>
+            </div>
+          </div>
+          <p class="form-note center mt-40" style="margin-top:20px"><strong class="text-or">Astuce —</strong> montez la <strong>Profondeur</strong> et la <strong>Finesse</strong>, puis ajustez le <strong>Contraste</strong>. Une image bien contrastée donne le relief le plus profond. Simulation indicative.</p>
+        </div>
+
+        <!-- COLONNE DROITE : relief, texte -->
+        <aside class="sim-panel">
           <div class="sim-group">
             <label>4 · Relief & gravure</label>
             <div class="slider-row"><label>Profondeur</label><input type="range" id="ctl-depth" min="10" max="100" value="70"><span class="val" id="ctl-depth-val">70%</span></div>
@@ -96,33 +113,24 @@
             <div class="slider-row"><label>Reflets</label><input type="range" id="ctl-polish" min="0" max="100" value="55"><span class="val" id="ctl-polish-val">55%</span></div>
             <div class="slider-row"><label>Contraste</label><input type="range" id="ctl-contrast" min="0" max="100" value="45"><span class="val" id="ctl-contrast-val">45%</span></div>
             <div class="slider-row"><label>Luminosité</label><input type="range" id="ctl-bright" min="-80" max="80" value="0"><span class="val" id="ctl-bright-val">0</span></div>
-            <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-top:8px;cursor:pointer">
-              <input type="checkbox" id="ctl-invert" style="accent-color:var(--or)"> Inverser le relief (creux ↔ saillie)
+            <label style="display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--blanc);margin-top:8px;cursor:pointer">
+              <input type="checkbox" id="ctl-invert" style="accent-color:var(--or)"> Inverser le relief
             </label>
-            <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-top:10px;cursor:pointer">
-              <input type="checkbox" id="ctl-tilt" style="accent-color:var(--or)"> Vue 3D (objet incliné avec épaisseur)
+            <label style="display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--blanc);margin-top:8px;cursor:pointer">
+              <input type="checkbox" id="ctl-tilt" style="accent-color:var(--or)"> Vue 3D (inclinée)
             </label>
           </div>
           <div class="sim-group">
             <label>5 · Texte gravé</label>
-            <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--blanc);margin-bottom:12px;cursor:pointer">
+            <label style="display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--blanc);margin-bottom:10px;cursor:pointer">
               <input type="checkbox" id="ctl-showtext" checked style="accent-color:var(--or)"> Afficher le texte
             </label>
-            <input type="text" id="ctl-text" class="field text-input-mini" value="ORYXIA" placeholder="Titre" style="margin-bottom:10px;padding:11px 14px;background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
-            <input type="text" id="ctl-subtext" class="field text-input-mini" value="Édition limitée" placeholder="Sous-titre" style="padding:11px 14px;background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
+            <input type="text" id="ctl-text" class="field text-input-mini" value="ORYXIA" placeholder="Titre" style="background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
+            <input type="text" id="ctl-subtext" class="field text-input-mini" value="Édition limitée" placeholder="Sous-titre" style="background:var(--noir-3);border:1px solid var(--gris);border-radius:8px;color:var(--blanc)">
           </div>
+          <p class="hint" style="margin-top:8px">Vos images restent dans votre navigateur — rien n'est envoyé sur un serveur.</p>
         </aside>
-        <div>
-          <div class="sim-stage">
-            <canvas id="sim-canvas"></canvas>
-            <div class="sim-actions">
-              <button class="btn btn-or" id="sim-download">Enregistrer l'aperçu</button>
-              <button class="btn btn-ghost" id="sim-reset">Réinitialiser l'image</button>
-              <a href="index.html#contact" class="btn btn-ghost">Commander ce modèle</a>
-            </div>
-          </div>
-          <p class="form-note center mt-40"><strong class="text-or">Astuce —</strong> pour un beau relief, montez la <strong>Profondeur</strong> et la <strong>Finesse</strong>, puis ajustez le <strong>Contraste</strong>. Une image bien contrastée (sujet clair sur fond sombre, ou inversement avec « Inverser ») donne le rendu le plus profond. Simulation indicative ; le rendu final dépend du matériau réel.</p>
-        </div>
+
       </div>
     </div>
   </section>
