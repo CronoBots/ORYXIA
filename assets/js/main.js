@@ -190,6 +190,7 @@
           </div>
           <div class="footer-bottom">
             <span>© ${year} ORYXIA Design — Tous droits réservés.</span>
+            <span>Site réalisé par <a href="https://clicandconnect.be" target="_blank" rel="noopener">Clic and Connect</a></span>
             <span><a href="${BASE}mentions-legales.html">Mentions légales</a> · <a href="${BASE}mentions-legales.html#cgv">CGV</a> · <a href="${BASE}mentions-legales.html#confidentialite">Confidentialité</a></span>
           </div>
         </div>
